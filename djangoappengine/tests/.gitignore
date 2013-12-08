@@ -1,0 +1,11 @@
+/__init__.pyc
+/backend.pyc
+/field_db_conversion.pyc
+/field_options.pyc
+/filter.pyc
+/keys.pyc
+/mapreduce_input_readers.pyc
+/not_return_sets.pyc
+/order.pyc
+/testmodels.pyc
+/transactions.pyc

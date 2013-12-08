@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+<p>posted on <strong>{{ post.created_on }}</strong></p>
+<p>{{ post.text }}</p>
+{% if post.comments %}}
+	<h2>Comments</h2>
+	{% for comment in post.comments %}
+		<p>{{ comment.text }}</p>
+		<p>by {{ comment.author.name }}</p>
+	{% endfor %}
+{% else %}
+	<h2>No comments</h2>
+{% endif %}
+{% endblock %}

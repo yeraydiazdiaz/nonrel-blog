@@ -1,0 +1,14 @@
+/__init__.pyc
+/auth_backends.pyc
+/basic.pyc
+/context_processors.pyc
+/decorators.pyc
+/forms.pyc
+/hashers.pyc
+/management.pyc
+/models.pyc
+/remote_user.pyc
+/signals.pyc
+/tokens.pyc
+/urls.pyc
+/views.pyc

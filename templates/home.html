@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Lastest posts{% endblock %}
+{% block content %}
+<h1>Welcome! Here are the latests posts:</h1>
+{% for post in posts %}
+	<h2><a href="/post/{{ post.id }}/{{ post.permalink }}">{{ post.title }}</a></h2>
+	<p>posted on <strong>{{ post.created_on }}</strong></p>
+	<p>{{ post.text|slice:":150" }}</p>
+	{% if post.comments %}
+		<p>{{ post.comments|length }} comments</p>
+	{% else %}
+		<p>No comments</p>
+	{% endif %}
+{% empty %}
+	<h2>Sorry, no posts in database.</h2>
+{% endfor %}
+{% endblock %}
