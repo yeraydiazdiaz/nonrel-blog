@@ -4,7 +4,7 @@
 <h1>{{ post.title }}</h1>
 <p>posted on <strong>{{ post.created_on }}</strong></p>
 <p>{{ post.text }}</p>
-{% if post.comments %}}
+{% if post.comments %}
 	<h2>Comments</h2>
 	{% for comment in post.comments %}
 		<p>{{ comment.text }}</p>
@@ -12,5 +12,14 @@
 	{% endfor %}
 {% else %}
 	<h2>No comments</h2>
+{% endif %}
+{% if forms %}
+	<hr/>
+	<p>Add a comment:</p>
+	<form action="/post/comment/{{ post.id }}/{{ post.permalink }}" method="post">{% csrf_token %}
+	{% for form in forms %}
+		{% include "generic_form.html" %}
+	{% endfor %}
+	<p><input type="submit" value="Submit comment" /></p>
 {% endif %}
 {% endblock %}

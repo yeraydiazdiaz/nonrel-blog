@@ -48,6 +48,9 @@ TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 BASE_DIR =  os.path.dirname(__file__)
 STATICFILES_DIRS = (os.path.join( BASE_DIR, 'static'),)
 STATIC_URL = '/static/'
-TEMPLATE_DIRS = (os.path.join( BASE_DIR, 'templates'),)
+TEMPLATE_DIRS = (
+                 os.path.join( BASE_DIR, 'templates'), 
+                 os.path.join( BASE_DIR, 'django', 'contrib', 'formtools', 'templates')
+                )
 
 ROOT_URLCONF = 'urls'

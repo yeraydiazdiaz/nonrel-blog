@@ -74,4 +74,4 @@ class BlogTests(TestCase):
         c = Client()
         response = c.get('/post/%s/%s' % (p.id, p.permalink) )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['post'], 1)  
+        self.assertEqual(response.context['post'], 1)
