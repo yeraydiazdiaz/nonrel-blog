@@ -5,7 +5,11 @@
 */
 
 #main {
-	margin: 60px auto 0 auto;
+	margin: 70px auto 0 auto;
 	width: 75%;
 }
 
+#comment-section {
+	margin: 0 auto 0 auto;
+	width: 75%;
+}

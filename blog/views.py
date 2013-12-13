@@ -28,12 +28,13 @@ def post(request, id_, permalink):
         raise Http404
     else:
         if request.method == 'POST': 
-            forms = [ AuthorForm(request.POST), CommentForm(request.POST) ]
+            forms = [ AuthorForm(request.POST, error_class=BlogErrorList), 
+                     CommentForm(request.POST, error_class=BlogErrorList) ]
             if forms[0].is_valid() and forms[1].is_valid(): 
                 post = save_comment( post, *forms )
         else:
             forms = [ AuthorForm(), CommentForm() ]
-        return render(request, 'post.html', { 'post': post, 'forms': forms })
+        return render(request, 'post.html', { 'post': post, 'forms': add_css_classes( forms ) })
 
 def save_comment( post, author_form, comment_form ):
     """Form is valid, update the post with the new comment.
@@ -44,3 +45,12 @@ def save_comment( post, author_form, comment_form ):
     post.comments.append( c )
     post.save()
     return post
+
+def add_css_classes( forms ):
+    """Adds custom classes to all widgets in the form. Used to style the forms using bootstrap classes.
+    
+    """
+    for form in forms:
+        for field in form.fields:
+            form.fields[field].widget.attrs.update( { 'class': 'form-control input-sm' } )
+    return forms

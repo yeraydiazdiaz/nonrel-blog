@@ -5,6 +5,7 @@ class Post(models.Model):
     """Basic model for blog posts, includes comments and tags as lists.
     
     """
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     permalink = models.CharField(max_length=255)
     text = models.TextField()

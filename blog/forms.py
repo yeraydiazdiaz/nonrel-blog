@@ -7,9 +7,11 @@ from django.forms import ModelForm
 from django.contrib.formtools.preview import FormPreview
 from django.http import HttpResponseRedirect
 from blog.models import *
+from django.forms.util import ErrorList
 
 class CommentForm(forms.ModelForm):
-    
+    """ModelForm for Comment.
+    """
     class Meta:
         model = Comment
         fields = [ 'text' ]
@@ -17,14 +19,15 @@ class CommentForm(forms.ModelForm):
         widgets = { 
                   'text': forms.Textarea( 
                                          attrs={'cols': 80,
-                                                'rows': 20,
-                                                'placeholder': 'Your comment here...'
+                                                'rows': 10,
+                                                'placeholder': 'Your comment ...'
                                                 } 
                                          ) 
                  }
 
 class AuthorForm(forms.ModelForm):
-    
+    """ModelForm for Author.
+    """
     class Meta:
         model = Author
         fields = [ 'name', 'email' ]
@@ -32,9 +35,14 @@ class AuthorForm(forms.ModelForm):
                   'name': 'Your name',
                   'email': 'Your email'
                 }
-
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Your Name'}),
+            'email': forms.TextInput(attrs={'placeholder': 'you@example.org'}),
+        }
+        
 class PostForm(forms.ModelForm):
-    
+    """ModelForm for Post.
+    """
     class Meta:
         model = Post
         fields = [ 'title', 'text' ]
@@ -50,9 +58,17 @@ class PostForm(forms.ModelForm):
                                                 } 
                                          )
                 }
-
-# Form previews
-class CommentFormPreview( FormPreview ):
+        
+class BlogErrorList( ErrorList ):
+    """Custom error list class.
+    """
+    def __unicode__(self):
+        return self.as_divs()
     
-    def done(self, request, cleaned_data):
-        return HttpResponseRedirect( '/comment/success' )
+    def as_divs(self):
+        if not self:
+            return u''
+        return u'<div class="alert alert-danger alert-dismissable">\
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\
+            <ul class="list-group">%s</ul>\
+            </div>' % ''.join([u'<div class="error">%s</div>' % e for e in self])

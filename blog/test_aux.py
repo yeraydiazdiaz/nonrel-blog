@@ -66,6 +66,7 @@ def create_post_with_comments(title=None, max_comments=5):
     p.comments = [] 
     for c in xrange(num_comments):
         p.comments.append( create_comment() )
+    p.save()
     return p
 
 def reset_db():

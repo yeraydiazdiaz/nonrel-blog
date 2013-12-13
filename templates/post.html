@@ -5,13 +5,14 @@
 <p>posted on <strong>{{ post.created_on }}</strong></p>
 <p>{{ post.text }}</p>
 {% if post.comments %}
-	<h2>Comments</h2>
+	<div id="comment-section">
+	<h3>Comments</h3>
 	{% for comment in post.comments %}
-		<p>{{ comment.text }}</p>
-		<p>by {{ comment.author.name }}</p>
+		<p><small>{{ comment.text }}</small></p>
+		<p class="text-right"><small>by {{ comment.author.name }} - {{ comment.author.email }}</small></p>
 	{% endfor %}
 {% else %}
-	<h2>No comments</h2>
+	<h3>No comments</h3>
 {% endif %}
 {% if forms %}
 	<hr/>
@@ -20,6 +21,7 @@
 	{% for form in forms %}
 		{% include "generic_form.html" %}
 	{% endfor %}
-	<p><input type="submit" value="Submit comment" /></p>
+	<p><input type="submit" value="Submit comment" class="btn btn-primary" /></p>
+	</div>
 {% endif %}
 {% endblock %}

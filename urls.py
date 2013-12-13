@@ -15,6 +15,6 @@ dbindexer.autodiscover()
 urlpatterns = patterns('',
     ('^_ah/warmup$', 'djangoappengine.views.warmup'),
     ('^$', 'blog.views.home'),
-    ('^post/(?P<id>.+)/(?P<permalink>.+)$', 'blog.views.post'),
-    ('^admin/', include(admin.site.urls)),
+    ('^post/comment/(?P<id_>.+)/(?P<permalink>.+)$', 'blog.views.post'),
+    ('^post/(?P<id_>.+)/(?P<permalink>.+)$', 'blog.views.post'),
 ) + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) 
