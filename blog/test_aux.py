@@ -4,6 +4,7 @@
 """
 
 from random import randrange
+from itertools import combinations
 from django.core import management
 from blog.models import *
 
@@ -22,6 +23,8 @@ authors = [
            { 'name': 'George', 'email': 'george@example.org' },
            { 'name': 'Ringo', 'email': 'ringo@example.org' }
         ]
+# Tags list
+tags = [ 'Abbey', 'Yellow', 'Revolver', 'Help' ]
 
 def create_permalink_from_title(title):
     """Auxiliary function to create a permalink based on filtering words and whitespaces into underscores.
@@ -43,7 +46,11 @@ def create_post(title=None):
     if not title:
         title='Test post'
 
-    return Post.objects.create( title=title, permalink=create_permalink_from_title(title), text=lipsum[ randrange( len(lipsum) ) ] )
+    return Post.objects.create( title=title,
+                                permalink=create_permalink_from_title(title),
+                                text=lipsum[ randrange( len(lipsum) ) ],
+                                tags=get_random_tags()
+                            )
 
 def create_comment():
     """Auxiliar function to create a comment using a random selection in the authors list.
@@ -51,7 +58,7 @@ def create_comment():
         A Comment instance with a random name an email from the authors list and some sample text.
     """
     a = authors[ randrange( len(authors) ) ]
-    return Comment( author=Author( name=a['name'], email=a['email'] ), text=lipsum[ randrange( len(lipsum) ) ] )
+    return Comment( author=Author( name=a['name'], email=a['email'] ), text=lipsum[ randrange( len(lipsum) ) ][:100] )
 
 def create_post_with_comments(title=None, max_comments=5):
     """Auxiliar function to create a post with some comments.
@@ -73,3 +80,12 @@ def reset_db():
     """Auxiliar function to reset the database with default values.
     """
     management.call_command('flush', verbosity=0, interactive=False)
+    
+def get_random_tags():
+    """Get a random list of tags from the tags list.
+    """
+    size = randrange( len( tags ) )
+    random_tags = []
+    for i in xrange(size):
+        random_tags.append( tags[ randrange( len(tags)) ] )
+    return random_tags

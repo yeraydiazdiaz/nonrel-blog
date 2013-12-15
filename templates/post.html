@@ -2,14 +2,19 @@
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 <h1>{{ post.title }}</h1>
-<p>posted on <strong>{{ post.created_on }}</strong></p>
+<p class="date">posted on <strong>{{ post.created_on }}</strong></p>
 <p>{{ post.text }}</p>
+{% include "tag_list.html %}
 {% if post.comments %}
 	<div id="comment-section">
 	<h3>Comments</h3>
 	{% for comment in post.comments %}
-		<p><small>{{ comment.text }}</small></p>
-		<p class="text-right"><small>by {{ comment.author.name }} - {{ comment.author.email }}</small></p>
+	{% if forloop.counter != vts|length %}
+	<div class="comment {{forloop.counter0|divisibleby:2|yesno:"even,odd"}}">
+	{% endif %}
+	<p><small>{{ comment.text }}</small></p>
+	<p class="text-right"><small>by {{ comment.author.name }} - {{ comment.author.email }}</small></p>
+	</div>
 	{% endfor %}
 {% else %}
 	<h3>No comments</h3>
