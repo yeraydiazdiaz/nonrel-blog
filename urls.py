@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     ('^$', 'blog.views.home'),
     ('^post/comment/(?P<id_>.+)/(?P<permalink>.+)$', 'blog.views.post'),
     ('^post/(?P<id_>.+)/(?P<permalink>.+)$', 'blog.views.post'),
+    ('^tag/(?P<tag_name>.+)$', 'blog.views.tag'),
 ) + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) 

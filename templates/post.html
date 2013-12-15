@@ -4,7 +4,7 @@
 <h1>{{ post.title }}</h1>
 <p class="date">posted on <strong>{{ post.created_on }}</strong></p>
 <p>{{ post.text }}</p>
-{% include "tag_list.html %}
+{% include "tag_buttons.html" %}
 {% if post.comments %}
 	<div id="comment-section">
 	<h3>Comments</h3>

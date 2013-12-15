@@ -111,3 +111,30 @@ class BlogTests(TestCase):
         p = Post.objects.get(title='Test post')
         self.assertLessEqual( original_num_comments, len( p.comments ) )
         
+    def test_tag_view(self):
+        """Test tag view through url and correctness of content.
+        
+        """
+        reset_db()
+        for i in range(5):
+            p = create_post('Test post %s' % i)
+            if i < 3:
+                p.tags = [ tags[0] ]
+            else:
+                p.tags = [ tags[1] ]
+            p.save()
+        
+        c = Client()
+        response = c.post('/tag/%s' % tags[0])    
+        self.assertEqual(response.status_code, 200, 'HTTP error.')
+        self.assertEqual(len( response.context['posts'] ), 3, 'Incorrect number of posts returned.')
+
+    def test_tag_view_non_existent_tag(self):
+        """Test tag view through url and correctness of content.
+        
+        """
+        reset_db()
+        c = Client()
+        response = c.post('/tag/foo')    
+        self.assertEqual(response.status_code, 200, 'HTTP error.')
+        self.assertEqual(len( response.context['posts'] ), 0, 'Incorrect number of posts returned.')

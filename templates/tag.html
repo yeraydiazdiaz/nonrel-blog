@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Posts tagged with {{ tag }}{% endblock %}
+{% block content %}
+{% if posts %}
+	<h1>Posts tagged with {{ tag }}:</h1>
+	{% include "post_list.html" %}
+{% else %}
+	<h2>Sorry, no posts tagged with {{ tag }}.</h2>
+{% endif %}
+{% endblock %}

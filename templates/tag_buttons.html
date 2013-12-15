@@ -1,0 +1,5 @@
+{% if post.tags %}
+{% for tag in post.tags %}
+<a href="/tag/{{tag}}"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>	
+{% endfor %}
+{% endif %}	
