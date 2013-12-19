@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Lastest posts{% endblock %}
 {% block content %}
-<h1>Welcome! Here are the latests posts:</h1>
+<h1>Welcome{% if user.is_authenticated %} {{ user.username }}{% endif %}! Here are the latests posts:</h1>
 {% if posts %}
 	{% include "post_list.html" %}
 {% else %}

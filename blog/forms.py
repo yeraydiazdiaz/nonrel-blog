@@ -6,8 +6,8 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.formtools.preview import FormPreview
 from django.http import HttpResponseRedirect
-from blog.models import *
 from django.forms.util import ErrorList
+from blog.models import *
 
 class CommentForm(forms.ModelForm):
     """ModelForm for Comment.
@@ -58,7 +58,7 @@ class PostForm(forms.ModelForm):
                                                 } 
                                          )
                 }
-        
+
 class BlogErrorList( ErrorList ):
     """Custom error list class.
     """

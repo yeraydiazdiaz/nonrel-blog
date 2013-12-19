@@ -5,8 +5,8 @@
 <p class="date">posted on <strong>{{ post.created_on }}</strong></p>
 <p>{{ post.text }}</p>
 {% include "tag_buttons.html" %}
+<div id="comment-section">
 {% if post.comments %}
-	<div id="comment-section">
 	<h3>Comments</h3>
 	{% for comment in post.comments %}
 	{% if forloop.counter != vts|length %}
@@ -27,6 +27,6 @@
 		{% include "generic_form.html" %}
 	{% endfor %}
 	<p><input type="submit" value="Submit comment" class="btn btn-primary" /></p>
-	</div>
 {% endif %}
+</div>
 {% endblock %}

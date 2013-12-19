@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div id="login">
+{% if registration_failed %}
+	<div class="alert alert-danger">Passwords did not match, please try again.</div>
+{% endif %}
+<form action="/register" method="post">{% csrf_token %}
+{% include "generic_form.html" %}
+<p><input type="submit" value="Register" class="btn btn-primary" /></p>
+</div>
+{% endblock %}

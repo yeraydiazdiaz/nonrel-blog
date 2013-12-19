@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div id="login">
+{% if login_failed %}
+	<div class="alert alert-danger">The username of password are not recognized.</div>
+{% endif %}
+<form action="/login" method="post">{% csrf_token %}
+{% include "generic_form.html" %}
+<p><input type="submit" value="Login" class="btn btn-primary" /></p>
+</div>
+{% endblock %}

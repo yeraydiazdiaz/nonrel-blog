@@ -5,6 +5,7 @@
 
 """
 
+import datetime
 from django.test import TestCase, Client
 from django.core import management
 from blog.models import *
@@ -138,3 +139,71 @@ class BlogTests(TestCase):
         response = c.post('/tag/foo')    
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len( response.context['posts'] ), 0, 'Incorrect number of posts returned.')
+
+    def test_login_view(self):
+        """Test response from login view.
+
+        """
+        reset_db()
+        c = Client()
+        response = c.post('/login')    
+        self.assertEqual(response.status_code, 200, 'HTTP error.')
+        self.assertIsNotNone(response.context['form'], 'No login form in login page.')
+
+    def test_incorrect_login(self):
+        """Test response from an incorrect login.
+
+        """
+        reset_db()
+        c = Client()
+        response = c.post('/login', { 'username': 'foo', 'password':'bar' })   
+        self.assertEqual(response.status_code, 200, 'HTTP error.')
+        self.assertIsNotNone(response.context['login_failed'], 'Unexpected non errors on login form.')
+
+    def test_correct_login(self):
+        """Test response from an incorrect login.
+
+        """
+        from django.contrib.auth.models import User
+        reset_db()
+        create_user()
+        c = Client()
+        response = c.post('/login', { 'username': 'John', 'password':'foobar' })
+        self.assertNotEqual(response.status_code, 404, 'HTTP error.')
+        u = User.objects.get( username='John' )
+        self.assertEqual(c.session['_auth_user_id'], u.pk, 'Login unsuccessful.')
+
+    def test_correct_logout(self):
+        """Test logout sequence.
+
+        """
+        from django.contrib.auth.models import User
+        reset_db()
+        u = create_user()
+        c = Client()
+        response = c.post('/login', { 'username': 'John', 'password':'foobar' })
+        self.assertNotEqual(response.status_code, 404, 'HTTP error on login.')
+        response = c.post('/logout')
+        self.assertNotEqual(response.status_code, 404, 'HTTP error on logout.')
+        u = User.objects.get( username=u.username )
+        self.assertEquals(c.session.get( '_auth_user_id', None ), None, 'Logout unsuccessful.')
+
+    def test_register_view(self):
+        """Test registration view.
+
+        """
+        c = Client()
+        response = c.post('/register', { 'username': 'John', 'password':'foobar' })
+        self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
+
+    def test_register_user(self):
+        """Test registration view.
+
+        """
+        from django.contrib.auth.models import User
+        reset_db()
+        c = Client()
+        response = c.post('/register', { 'username': 'John', 'password1':'foobar' })
+        self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
+        u = User.objects.get(username='John')
+        self.assertIsNotNone(u, 'User not created.')

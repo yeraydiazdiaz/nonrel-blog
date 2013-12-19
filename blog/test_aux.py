@@ -89,3 +89,10 @@ def get_random_tags():
     for i in xrange(size):
         random_tags.append( tags[ randrange( len(tags)) ] )
     return random_tags
+
+
+def create_user():
+    from django.contrib.auth.models import User
+    u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
+    u.save()
+    return u

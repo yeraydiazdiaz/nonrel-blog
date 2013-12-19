@@ -19,6 +19,11 @@
 	width: 75%;
 }
 
+#login {
+	margin: 0 auto 0 auto;
+	width: 50%;
+}
+
 .comment {
 	padding: 1em;
 }
