@@ -197,13 +197,24 @@ class BlogTests(TestCase):
         self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
 
     def test_register_user(self):
-        """Test registration view.
+        """Test registration sequence.
 
         """
         from django.contrib.auth.models import User
         reset_db()
         c = Client()
-        response = c.post('/register', { 'username': 'John', 'password1':'foobar' })
+        response = c.post('/register', { 'username': 'John', 'password1':'foobar', 'password2':'foobar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
         u = User.objects.get(username='John')
         self.assertIsNotNone(u, 'User not created.')
+
+    def test_mismatch_password_register_failed(self):
+        """Test registration failure.
+
+        """
+        from django.contrib.auth.models import User
+        reset_db()
+        c = Client()
+        response = c.post('/register', { 'username': 'John', 'password1':'foo', 'password2':'bar' })
+        self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
+        self.assertEquals(User.objects.all().count(), 0, 'Unexpected user in database.')
