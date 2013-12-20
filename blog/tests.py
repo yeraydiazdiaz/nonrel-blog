@@ -86,7 +86,7 @@ class BlogTests(TestCase):
         reset_db()
         p = create_post_with_comments()
         c = Client()
-        response = c.post('/post/%s/%s' % (p.id, p.permalink), {})
+        response = c.get('/post/%s/%s' % (p.id, p.permalink) )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         for f in response.context['forms']:
             self.assertIsNotNone(f.errors, 'Expected error, got None on form %s.' % f)
@@ -126,7 +126,7 @@ class BlogTests(TestCase):
             p.save()
         
         c = Client()
-        response = c.post('/tag/%s' % tags[0])    
+        response = c.get('/tag/%s' % tags[0])    
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len( response.context['posts'] ), 3, 'Incorrect number of posts returned.')
 
@@ -136,7 +136,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.post('/tag/foo')    
+        response = c.get('/tag/foo')    
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len( response.context['posts'] ), 0, 'Incorrect number of posts returned.')
 
@@ -183,7 +183,7 @@ class BlogTests(TestCase):
         c = Client()
         response = c.post('/login', { 'username': 'John', 'password':'foobar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error on login.')
-        response = c.post('/logout')
+        response = c.get('/logout')
         self.assertNotEqual(response.status_code, 404, 'HTTP error on logout.')
         u = User.objects.get( username=u.username )
         self.assertEquals(c.session.get( '_auth_user_id', None ), None, 'Logout unsuccessful.')
@@ -218,3 +218,33 @@ class BlogTests(TestCase):
         response = c.post('/register', { 'username': 'John', 'password1':'foo', 'password2':'bar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error on register.')
         self.assertEquals(User.objects.all().count(), 0, 'Unexpected user in database.')
+
+    def test_create_post_view_redirects_anonymous_users(self):
+        """Test create post view.
+
+        """
+        c = Client()
+        response = c.get('/create_post')
+        self.assertEqual(response.status_code, 302, 'Expected HTTP redirection on create post view.')
+
+    def test_create_post_view(self):
+        """Test create post view.
+
+        """
+        from django.contrib.auth.models import User
+        u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
+        u.save()
+        c = Client()
+        c.post('/login', { 'username': 'John', 'password':'foobar' })
+        response = c.get('/create_post')
+        self.assertEqual(response.status_code, 200, 'HTTP error on create post view.')
+
+    def test_create_post_correctly(self):
+        """Test create post view.
+
+        """
+        reset_db()
+        response, c = create_and_login_user()
+        response = c.post('/create_post', { 'title': 'test_create_post_correctly', 'text': 'This is a test post' } )
+        self.assertEqual(response.status_code, 302, 'Expected HTTP redirection on create post view.')
+        self.assertGreater(Post.objects.all().count(), 0, 'Expected 1 post in database, got 0.')

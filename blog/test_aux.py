@@ -1,4 +1,5 @@
 """
+
     Module to host auxiliar functions used across the Blog app tests.
 
 """
@@ -7,6 +8,7 @@ from random import randrange
 from itertools import combinations
 from django.core import management
 from blog.models import *
+from django.test.client import Client
 
 # Sample text
 lipsum = [
@@ -26,16 +28,6 @@ authors = [
 # Tags list
 tags = [ 'Abbey', 'Yellow', 'Revolver', 'Help' ]
 
-def create_permalink_from_title(title):
-    """Auxiliary function to create a permalink based on filtering words and whitespaces into underscores.
-    
-    """
-    import re
-    exp = re.compile('\W')
-    whitespace = re.compile('\s')
-    temp_title = whitespace.sub("_",title)
-    return exp.sub('', temp_title)
-
 def create_post(title=None):
     """Auxiliar function to create a post.
     Args:
@@ -46,11 +38,13 @@ def create_post(title=None):
     if not title:
         title='Test post'
 
-    return Post.objects.create( title=title,
-                                permalink=create_permalink_from_title(title),
+    p = Post.objects.create( title=title,
                                 text=lipsum[ randrange( len(lipsum) ) ],
                                 tags=get_random_tags()
                             )
+    p.create_permalink_from_title()
+    p.save()
+    return p
 
 def create_comment():
     """Auxiliar function to create a comment using a random selection in the authors list.
@@ -90,9 +84,22 @@ def get_random_tags():
         random_tags.append( tags[ randrange( len(tags)) ] )
     return random_tags
 
-
 def create_user():
+    """Creates a user for login tests.
+    
+    """
     from django.contrib.auth.models import User
     u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
     u.save()
     return u
+
+def create_and_login_user():
+    """Creates a user for login tests.
+    
+    """
+    from django.contrib.auth.models import User
+    u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
+    u.save()
+    c = Client()
+    response = c.post('/login', { 'username': 'John', 'password':'foobar' })
+    return response, c

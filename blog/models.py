@@ -14,6 +14,17 @@ class Post(models.Model):
     created_on = models.DateTimeField( auto_now_add=True, null=True )
     updated_on = models.DateTimeField( null=True )
     
+    def create_permalink_from_title(self):
+        """Function to create a permalink based on filtering words and whitespaces into underscores.
+        
+        """
+        import re
+        exp = re.compile('\W')
+        whitespace = re.compile('\s')
+        temp_title = whitespace.sub("_",self.title)
+        self.permalink = exp.sub('', temp_title)
+        return self.permalink
+    
     def __unicode__(self):
         return '%s - %s ...' % ( self.title, self.text[:30] )
     

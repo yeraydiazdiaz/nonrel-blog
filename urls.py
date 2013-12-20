@@ -1,3 +1,10 @@
+"""
+
+    urls.py for non-rel blog.
+
+"""
+
+import os
 from django.conf.urls.defaults import *
 from django.contrib import admin
 import dbindexer
@@ -21,4 +28,6 @@ urlpatterns = patterns('',
     ('^login$', 'blog.views.login_view'),
     ('^logout$', 'blog.views.logout_view'),
     ('^register$', 'blog.views.register_view'),
+    ('^create_post$', 'blog.views.create_post_view' ),
 ) + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) 
+

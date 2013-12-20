@@ -7,6 +7,7 @@
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 from blog.models import Post
 from blog.forms import *
 
@@ -20,6 +21,7 @@ def home_view(request):
 
 def post_view(request, id_, permalink):
     """Post view, attempts to retrieve the post with the id, raising a 404 if not found.
+    Also handles the creation of comments.
 
     """
     try:
@@ -55,14 +57,18 @@ def login_view( request ):
         password = request.POST.get( 'password', None )
         if username and password:
             user = authenticate( username=username, password=password )
-            if user is not None:
+            if user:
                 login(request, user)
-                return HttpResponseRedirect( '/' )
-
+                return HttpResponseRedirect( request.POST.get( 'next', '/' ) )
+        
         form = AuthenticationForm(request.POST, error_class=BlogErrorList)
         return render(request, 'login.html', { 'form': add_css_classes( form ), 'login_failed': True  })
     else:
         form = AuthenticationForm()
+        next = request.GET.get('next', None)
+        if next:
+            import django.forms as forms 
+            form.fields['next'] = forms.CharField( widget=forms.HiddenInput( attrs={ 'value': next }) )
     return render(request, 'login.html', { 'form': add_css_classes( form ) })
 
 def logout_view( request ):
@@ -74,26 +80,43 @@ def logout_view( request ):
     return HttpResponseRedirect( '/' )
 
 def register_view( request ):
-    """Register view.
+    """Register view, handles password matching errors and creation of new users.
     
     """
     import django.contrib.auth as auth
     if request.method == 'POST':
-        username = request.POST.get( 'username', None )
-        password1 = request.POST.get( 'password1', None )
-        password2 = request.POST.get( 'password2', None )
-        if username and password1 and password2 and password1 == password2:
-            auth.models.User.objects.create_user( username=username, password=password1 )
-            user = auth.authenticate( username=username, password=password1 )
-            if user is not None:
-                auth.login(request, user)
-                return HttpResponseRedirect( '/' )
-        
-        form = auth.forms.UserCreationForm(request.POST, error_class=BlogErrorList)
-        return render(request, 'register.html', { 'form': add_css_classes( form ), 'registration_failed': True  })
+        form = auth.forms.UserCreationForm( request.POST )
+        if form.is_valid():
+            username = request.POST.get( 'username', None )
+            password1 = request.POST.get( 'password1', None )
+            password2 = request.POST.get( 'password2', None )
+            if username and password1 and password2 and password1 == password2:
+                auth.models.User.objects.create_user( username=username, password=password1 )
+                user = auth.authenticate( username=username, password=password1 )
+                if user is not None:
+                    auth.login(request, user)
+                    return HttpResponseRedirect( request.REQUEST.get( 'next', '/' ) )
+        else:
+            form = auth.forms.UserCreationForm(request.POST, error_class=BlogErrorList)
+            return render(request, 'register.html', { 'form': add_css_classes( form ), 'registration_failed': True  })
     else:
         form = auth.forms.UserCreationForm()
-    return render(request, 'register.html', { 'form': add_css_classes( form ) })
+        return render(request, 'register.html', { 'form': add_css_classes( form ) })
+
+@login_required
+def create_post_view( request ):
+    """Create post view
+
+    """
+    if request.method == 'POST': 
+        form = PostForm(request.POST, error_class=BlogErrorList)
+        if form.is_valid(): 
+            p = Post.objects.create( title=request.POST['title'], text=request.POST['text'] )
+            p.create_permalink_from_title()
+            p.save()
+            return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
+    else:
+        return render( request, 'create_post.html', { 'form': add_css_classes( PostForm() ) } )
 
 ### Auxiliar functions 
 
@@ -111,7 +134,7 @@ def add_css_classes( *forms ):
     return forms
 
 def save_comment( post, author_form, comment_form ):
-    """Form is valid, update the post with the new comment.
+    """Comment form is valid, update the post with the new comment.
     
     """
     a = Author.objects.create( name=author_form.cleaned_data['name'], email=author_form.cleaned_data['email'] )

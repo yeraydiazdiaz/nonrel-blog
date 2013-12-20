@@ -51,13 +51,18 @@ class PostForm(forms.ModelForm):
                   'text': 'Content'
                 }
         widgets = {
+                   'title': forms.TextInput( attrs={'id': 'post-title'} ),
                    'text': forms.Textarea( 
                                          attrs={'cols': 80,
                                                 'rows': 20,
-                                                'placeholder': 'Your post here...'
+                                                'placeholder': 'Your post here...',
+                                                'id': 'post-text'
                                                 } 
                                          )
                 }
+        
+    class Media:
+        js = ( '/static/js/post_preview.js' ,)
 
 class BlogErrorList( ErrorList ):
     """Custom error list class.
@@ -72,3 +77,4 @@ class BlogErrorList( ErrorList ):
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\
             <ul class="list-group">%s</ul>\
             </div>' % ''.join([u'<div class="error">%s</div>' % e for e in self])
+            
