@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Edit post{% endblock %}
+{% block content %}
+{% if not error %}
+	<h3>Edit post:</h3>
+	<div id="post-preview"></div>
+	<form action="" method="post">{% csrf_token %}
+	{% include "generic_form.html" %}
+	<p><input value="Preview" class="btn btn-primary" id="preview" />
+	<input type="submit" value="Edit post" class="btn btn-primary" disabled="disabled" id="submit" /></p>
+{% else %}
+	<div class="alert alert-danger">{{ result }}</div>
+{% endif %}
+{% endblock %}

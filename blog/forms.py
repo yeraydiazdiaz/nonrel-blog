@@ -43,12 +43,18 @@ class AuthorForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     """ModelForm for Post.
     """
+    tags = forms.CharField( max_length=255,
+                            help_text='Space-separated tags for your post',
+                            required=False
+                            )
+    tags.widget.attrs.update( {'id': 'post-tags'} )
+    
     class Meta:
         model = Post
         fields = [ 'title', 'text' ]
         labels = { 
                   'title': 'Post title',
-                  'text': 'Content'
+                  'text': 'Content',
                 }
         widgets = {
                    'title': forms.TextInput( attrs={'id': 'post-title'} ),
@@ -58,7 +64,7 @@ class PostForm(forms.ModelForm):
                                                 'placeholder': 'Your post here...',
                                                 'id': 'post-text'
                                                 } 
-                                         )
+                                         ),
                 }
         
     class Media:

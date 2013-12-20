@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Delete post{% endblock %}
+{% block content %}
+<h3>Delete post:</h3>
+{% if error %}
+	<div class="alert alert-danger">{{ result }}</div>
+{% else %}
+	{{ result }}
+{% endif %}
+<p><a href="/" class="btn btn-primary">Latest posts</a></p>
+{% endblock %}

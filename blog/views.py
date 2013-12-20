@@ -19,13 +19,13 @@ def home_view(request):
     posts = Post.objects.all()[:MAX_HOME_POSTS]
     return render(request, 'home.html', { 'posts': posts })
 
-def post_view(request, id_, permalink):
+def post_view(request, post_id, permalink):
     """Post view, attempts to retrieve the post with the id, raising a 404 if not found.
     Also handles the creation of comments.
 
     """
     try:
-        post = Post.objects.get( id=id_ )
+        post = Post.objects.get( id=post_id )
     except ObjectDoesNotExist:
         raise Http404
     else:
@@ -35,8 +35,8 @@ def post_view(request, id_, permalink):
             if forms[0].is_valid() and forms[1].is_valid(): 
                 post = save_comment( post, *forms )
         else:
-            forms = [ AuthorForm(), CommentForm() ]
-        return render(request, 'post.html', { 'post': post, 'forms': add_css_classes( *forms ) })
+            forms = add_css_classes( AuthorForm(), CommentForm() )
+        return render(request, 'post.html', { 'post': post, 'forms': forms  })
 
 
 def tag_view( request, tag_name ):
@@ -111,12 +111,60 @@ def create_post_view( request ):
     if request.method == 'POST': 
         form = PostForm(request.POST, error_class=BlogErrorList)
         if form.is_valid(): 
-            p = Post.objects.create( title=request.POST['title'], text=request.POST['text'] )
+            p = Post.objects.create( title=request.POST['title'],
+                                     text=request.POST['text'],
+                                     tags=request.POST['tags'].split(),
+                                     user_id=request.user.id )
             p.create_permalink_from_title()
             p.save()
             return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
+        
+        return render( request, 'create_post.html', { 'form': form } )
     else:
         return render( request, 'create_post.html', { 'form': add_css_classes( PostForm() ) } )
+
+@login_required
+def edit_post_view( request, post_id ):
+    """Edit post view
+
+    """
+    try:
+        p = Post.objects.get( id=post_id )
+        if request.method == 'POST': 
+            form = PostForm(request.POST, error_class=BlogErrorList)
+            if form.is_valid(): 
+                p.title=request.POST['title']
+                p.text=request.POST['text']
+                p.tags=request.POST.get('tags', '').split()
+                p.user_id=request.user.id
+                p.create_permalink_from_title()
+                p.save()
+                return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
+        else:
+            form = PostForm( initial= {
+                                'title': p.title,
+                                'text': p.text,
+                                'tags': ' '.join(p.tags)
+                            } )
+
+        return render( request, 'edit_post.html', { 'form': add_css_classes( form ) } )
+
+    except ObjectDoesNotExist:
+        return render( request, 'edit_post.html', { 'error': True, 'result' : 'Post does not exist.'} )
+        
+
+@login_required
+def delete_post_view( request, post_id ):
+    try:
+        p = Post.objects.get( id=post_id )
+        if request.user.id == p.user_id:
+            p.delete()
+            return render( request, 'delete_post.html', { 'result' : 'Post deleted correctly.'} )
+        else:
+            return render( request, 'delete_post.html', { 'error': True, 'result' : 'You are not authorized to delete this post.'} )
+    except ObjectDoesNotExist:
+        return render( request, 'delete_post.html', { 'error': True, 'result' : 'Post does not exists.'} )
+        
 
 ### Auxiliar functions 
 

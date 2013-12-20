@@ -8,6 +8,7 @@ class Post(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     permalink = models.CharField(max_length=255)
+    user_id = models.IntegerField(null=True)
     text = models.TextField()
     tags = ListField()
     comments = ListField( EmbeddedModelField( 'Comment' ) )

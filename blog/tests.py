@@ -244,7 +244,83 @@ class BlogTests(TestCase):
 
         """
         reset_db()
-        response, c = create_and_login_user()
-        response = c.post('/create_post', { 'title': 'test_create_post_correctly', 'text': 'This is a test post' } )
+        response, c, u = create_and_login_user()
+        title = 'test_create_post_correctly'
+        text = 'This is a test post'
+        tags = 'tag1 tag2 tag3'
+        response = c.post('/create_post', { 'title': title, 
+                                            'text': text,
+                                            'tags':  tags} )
         self.assertEqual(response.status_code, 302, 'Expected HTTP redirection on create post view.')
         self.assertGreater(Post.objects.all().count(), 0, 'Expected 1 post in database, got 0.')
+        p = Post.objects.get()
+        self.assertEqual(p.title, title, 'Mismatch on title')
+        self.assertEqual(p.text, text, 'Mismatch on text')
+        self.assertEqual(p.tags, tags.split(), 'Mismatch on tags')
+        
+    def test_delete_requires_auth(self):
+        """Test authentication requirement for deleting posts.
+        
+        """
+        reset_db()
+        p = create_post()
+        prev_post_count = Post.objects.all().count()
+        c = Client()
+        response = c.get( '/delete_post/%s' % p.id )
+        self.assertEqual(response.status_code, 302, 'Expected HTTP redirection.')
+        self.assertEqual( Post.objects.all().count() , prev_post_count, 'Expected same number of posts.')
+        
+    def test_delete_non_existing_post_fails(self):
+        """Test failure of trying to delete a post with an invalid id.
+        
+        """
+        reset_db()
+        response, c, u = create_and_login_user()
+        response = c.get( '/delete_post/%s' % 1 )
+        self.assertEqual( Post.objects.all().count() , 0, 'Expected no posts.')
+        
+    def test_delete_post_correctly(self):
+        """Test correct deletion of posts if all requirements are met.
+        
+        """
+        reset_db()
+        response, c, u = create_and_login_user()
+        p = create_post('title', u)
+        response = c.get( '/delete_post/%s' % p.id )
+        self.assertEqual( Post.objects.all().count() , 0, 'Expected no posts.')
+        
+    def test_edit_requires_auth(self):
+        """Test authentication requirement for editing posts.
+        
+        """
+        reset_db()
+        p = create_post()
+        c = Client()
+        response = c.get( '/edit_post/%s' % p.id )
+        self.assertEqual(response.status_code, 302, 'Expected HTTP redirection.')
+        
+    def test_edit_non_existing_post_fails(self):
+        """Test failure of trying to edit a post with an invalid id.
+        
+        """
+        reset_db()
+        response, c, u = create_and_login_user()
+        response = c.get( '/edit_post/%s' % 1 )
+        self.assertEqual( response.context['error'] , True, 'Expected error in context.')
+        
+    def test_edit_post_correctly(self):
+        """Test editing sequence.
+        
+        """
+        reset_db()
+        response, c, u = create_and_login_user()
+        p = create_post('Test post', u)
+        orig_text = p.text
+        response = c.post( '/edit_post/%s' % p.id, {
+                                                    'title': p.title+' edited',
+                                                    'text': p.text+' edited',
+                                                    'tags:': ' '.join(p.tags),
+                                                } )
+        p = Post.objects.get()
+        self.assertEqual( p.title , 'Test post edited', 'Mismatch in title.')
+        self.assertEqual( p.text , orig_text+' edited', 'Mismatch in text.')

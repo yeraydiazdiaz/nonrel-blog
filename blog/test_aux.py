@@ -28,7 +28,7 @@ authors = [
 # Tags list
 tags = [ 'Abbey', 'Yellow', 'Revolver', 'Help' ]
 
-def create_post(title=None):
+def create_post( title=None, user=None):
     """Auxiliar function to create a post.
     Args:
         title: Optional string to be used as title for the post.
@@ -42,6 +42,8 @@ def create_post(title=None):
                                 text=lipsum[ randrange( len(lipsum) ) ],
                                 tags=get_random_tags()
                             )
+    if user:
+        p.user_id = user.id
     p.create_permalink_from_title()
     p.save()
     return p
@@ -102,4 +104,4 @@ def create_and_login_user():
     u.save()
     c = Client()
     response = c.post('/login', { 'username': 'John', 'password':'foobar' })
-    return response, c
+    return response, c, u
