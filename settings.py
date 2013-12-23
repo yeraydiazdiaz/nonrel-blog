@@ -1,7 +1,6 @@
-import os, socket
+import os
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
-DEBUG = True
 
 # Initialize App Engine and import the default settings (DB backend, etc.).
 # If you want to use a different backend you have to remove all occurences
