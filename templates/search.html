@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Posts matching {{ search_terms }}{% endblock %}
+{% block content %}
+<h1>Results matching "{{ search_terms }}":</h1>
+{% if posts %}
+	{% include "post_list.html" %}
+{% else %}
+	<h2>Sorry, no posts match that query.</h2>
+{% endif %}
+{% endblock %}

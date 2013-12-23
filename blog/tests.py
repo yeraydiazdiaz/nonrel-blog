@@ -10,6 +10,7 @@ from django.test import TestCase, Client
 from django.core import management
 from blog.models import *
 from test_aux import *
+from cgitb import reset
 
 class BlogTests(TestCase):
     
@@ -324,3 +325,24 @@ class BlogTests(TestCase):
         p = Post.objects.get()
         self.assertEqual( p.title , 'Test post edited', 'Mismatch in title.')
         self.assertEqual( p.text , orig_text+' edited', 'Mismatch in text.')
+        
+    def test_search_successful(self):
+        """Test searching of posts.
+        
+        """
+        reset_db()
+        r, c, u = create_and_login_user()
+        for i in xrange(10):
+            create_post('Test post %s' %i, u)
+        response = c.get( '/search/', { 'q': 'Test' } )
+        self.assertGreater( len( response.context['posts'] ), 0, 'Expected at least one hit.')
+        
+    def test_search_with_no_hits(self):
+        """Test searching of posts.
+        
+        """
+        reset_db()
+        c = Client()
+        response = c.get( '/search/', { 'q': 'Test' } )
+        self.assertEquals( len( response.context['posts'] ), 0, 'Expected no hits.')
+    

@@ -1,7 +1,11 @@
 {% for field in form %}
 	{{ field.media }}
     <div class="fieldWrapper form-group{% if field.errors %} has-error{% endif %}">
-        {{ field.label_tag }}{{ field }}
+    	{% if field.as_p %}
+    		{{ field.label_tag.as_p }}{{ field.as_p }}
+        {% else %}
+        	{{ field.label_tag }}{{ field }}
+        {% endif %}
         {% if field.help_text %}<span class="help-block">{{ field.help_text }}</span>{% endif %}
         {% if field.errors %}{% autoescape off %}{{ field.errors }}{% endautoescape %}{% endif %}
     </div>

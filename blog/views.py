@@ -115,7 +115,6 @@ def create_post_view( request ):
                                      text=request.POST['text'],
                                      tags=request.POST['tags'].split(),
                                      user_id=request.user.id )
-            p.create_permalink_from_title()
             p.save()
             return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
         
@@ -125,7 +124,7 @@ def create_post_view( request ):
 
 @login_required
 def edit_post_view( request, post_id ):
-    """Edit post view
+    """Edit post view, handles submission of forms and renders a result message if the post does not exist.
 
     """
     try:
@@ -137,7 +136,6 @@ def edit_post_view( request, post_id ):
                 p.text=request.POST['text']
                 p.tags=request.POST.get('tags', '').split()
                 p.user_id=request.user.id
-                p.create_permalink_from_title()
                 p.save()
                 return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
         else:
@@ -164,7 +162,17 @@ def delete_post_view( request, post_id ):
             return render( request, 'delete_post.html', { 'error': True, 'result' : 'You are not authorized to delete this post.'} )
     except ObjectDoesNotExist:
         return render( request, 'delete_post.html', { 'error': True, 'result' : 'Post does not exists.'} )
-        
+
+
+def search( request ):
+    from search.core import search
+    search_terms = request.GET.get('q', None)
+    if search_terms:
+        posts = search( Post, search_terms )
+    else:
+        posts = None
+    return render( request, 'search.html', { 'posts': posts, 'search_terms': search_terms } )
+
 
 ### Auxiliar functions 
 
