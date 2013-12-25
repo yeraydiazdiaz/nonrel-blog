@@ -1,9 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Posts matching {{ search_terms }}{% endblock %}
+{% block title %}Posts matching {{ terms }}{% endblock %}
 {% block content %}
-<h1>Results matching "{{ search_terms }}":</h1>
+<h1>Results matching "{{ terms }}":</h1>
 {% if posts %}
+<div id="post-list">
 	{% include "post_list.html" %}
+</div>
+	{% if posts|length < total_posts %}
+		{% include "load_more_posts.html" with page="search" %}
+	{% endif %}
 {% else %}
 	<h2>Sorry, no posts match that query.</h2>
 {% endif %}

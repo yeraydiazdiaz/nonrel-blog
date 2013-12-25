@@ -31,3 +31,9 @@ indexes:
   properties:
   - name: __key__
     direction: desc
+
+- kind: search_relationindex_blog_post_search_index
+  properties:
+  - name: search_index_search_list_field
+  - name: created_on
+    direction: desc

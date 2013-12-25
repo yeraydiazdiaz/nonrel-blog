@@ -48,18 +48,19 @@ class BlogTests(TestCase):
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len(response.context['posts']), 1, 'Expected only one post.')
         
-    def test_home_view_with_several_post(self):
+    def test_home_view_with_limited_post(self):
         """Test home view in case there several posts in the database.
         
         """
+        from blog.views import INITIAL_POSTS
         reset_db()
-        for i in xrange(5):
+        for i in xrange(INITIAL_POSTS+1):
             create_post_with_comments()
         c = Client()
         response = c.get('/')
         self.assertEqual(response.status_code, 200, 'HTTP error.')
-        self.assertEqual(len(response.context['posts']), 5, 'Unexpected number of posts.')   
-                
+        self.assertEqual(len(response.context['posts']), INITIAL_POSTS, 'Unexpected number of posts.')   
+
     def test_post_view_non_existent_permalink(self):
         """Test post view with a non existent permalink.
         
@@ -129,7 +130,7 @@ class BlogTests(TestCase):
         c = Client()
         response = c.get('/tag/%s' % tags[0])    
         self.assertEqual(response.status_code, 200, 'HTTP error.')
-        self.assertEqual(len( response.context['posts'] ), 3, 'Incorrect number of posts returned.')
+        self.assertEqual( response.context['total_posts'], 3, 'Incorrect number of posts returned.')
 
     def test_tag_view_non_existent_tag(self):
         """Test tag view through url and correctness of content.
@@ -345,4 +346,42 @@ class BlogTests(TestCase):
         c = Client()
         response = c.get( '/search/', { 'q': 'Test' } )
         self.assertEquals( len( response.context['posts'] ), 0, 'Expected no hits.')
+        
+    def test_load_home_posts_successfully(self):
+        """Test searching of posts.
+        
+        """
+        from blog.views import INITIAL_POSTS
+        reset_db()
+        r, c, u = create_and_login_user()
+        for i in xrange(10):
+            create_post('Test post %s' %i, u)
+        response = c.get( '/load_posts', { 'page': 'home', 'start': str(INITIAL_POSTS), 'total': '10' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
+        
+    def test_load_tag_posts_successfully(self):
+        """Test searching of posts.
+        
+        """
+        from blog.views import INITIAL_POSTS
+        reset_db()
+        r, c, u = create_and_login_user()
+        for i in xrange(10):
+            p = create_post('Test post %s' %i, u)
+            p.tags = [ tags[0] ]
+            p.save()
+        response = c.get( '/load_posts', { 'page': 'tag', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': tags[0] }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
+        
+    def test_load_search_posts_successfully(self):
+        """Test searching of posts.
+        
+        """
+        from blog.views import INITIAL_POSTS
+        reset_db()
+        r, c, u = create_and_login_user()
+        for i in xrange(10):
+            p = create_post('Test post %s' %i, u)
+        response = c.get( '/load_posts', { 'page': 'search', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': 'test' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
     

@@ -32,5 +32,6 @@ urlpatterns = patterns('',
     ('^delete_post/(?P<post_id>.+)$', 'blog.views.delete_post_view' ),
     ('^edit_post/(?P<post_id>.+)$', 'blog.views.edit_post_view' ),
     ('^search/$', 'blog.views.search' ),
+    ('^load_posts/$', 'blog.views.load_posts_view' ),
 ) + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) 
 

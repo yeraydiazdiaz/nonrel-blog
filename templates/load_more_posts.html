@@ -1,0 +1,37 @@
+<script>
+var start = {{ posts|length }}
+var total_posts = {{ total_posts }}
+var allow_calls = true;
+
+function toggle_button() {
+	if ( $("#load-more-posts").attr('disabled') != undefined ) {
+		$("#load-more-posts").attr('disabled', 'disabled' );
+	}else{
+		$("#load-more-posts").removeAttr( 'disabled' );
+	}
+}
+
+function refresh_posts( json ) {
+	$("#post-list").append( json["posts"] );
+	start = json["start"];
+	if (start >= total_posts) {
+		$("#load-more-posts").hide();
+	}else{
+		allow_calls = true;
+		toggle_button();
+	}
+}
+
+function load_more_posts_click() {
+	if ( allow_calls ) {
+		allow_calls = false;
+		toggle_button();
+		$.getJSON( "/load_posts", { page: "{{ page }}", terms: "{{ terms }}", start: start, total: total_posts }, refresh_posts );
+	}
+}
+
+$(document).ready( function() {
+	$("#load-more-posts").click( load_more_posts_click );
+ } );
+</script>
+<p class="text-center"><a id="load-more-posts" class="btn btn-primary">Load more posts...</a></p>

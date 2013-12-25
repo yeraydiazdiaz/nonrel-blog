@@ -1,3 +1,11 @@
+"""
+
+    indexes.py
+    
+    Runs autodiscover from django-autoload for dbindexer and search modules.
+
+"""
+
 from dbindexer import autodiscover
 autodiscover()
 
