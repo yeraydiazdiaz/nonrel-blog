@@ -20,18 +20,6 @@ admin.autodiscover()
 dbindexer.autodiscover()
 
 urlpatterns = patterns('',
-    ('^_ah/warmup$', 'djangoappengine.views.warmup'),
-    ('^$', 'blog.views.home_view'),
-    ('^post/comment/(?P<post_id>.+)/(?P<permalink>.+)$', 'blog.views.post_view'),
-    ('^post/(?P<post_id>.+)/(?P<permalink>.+)$', 'blog.views.post_view'),
-    ('^tag/(?P<tag_name>.+)$', 'blog.views.tag_view'),
-    ('^login$', 'blog.views.login_view'),
-    ('^logout$', 'blog.views.logout_view'),
-    ('^register$', 'blog.views.register_view'),
-    ('^create_post$', 'blog.views.create_post_view' ),
-    ('^delete_post/(?P<post_id>.+)$', 'blog.views.delete_post_view' ),
-    ('^edit_post/(?P<post_id>.+)$', 'blog.views.edit_post_view' ),
-    ('^search/$', 'blog.views.search' ),
-    ('^load_posts/$', 'blog.views.load_posts_view' ),
+    (r'^_ah/warmup$', 'djangoappengine.views.warmup'),
+    (r'', include('blog.urls')),
 ) + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) 
-

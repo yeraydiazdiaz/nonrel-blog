@@ -61,3 +61,5 @@ TEMPLATE_DIRS = (
 
 ROOT_URLCONF = 'urls'
 LOGIN_URL = '/login'
+
+USE_TZ = True

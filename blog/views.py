@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from blog.models import Post
 from blog.forms import *
 
@@ -21,14 +22,19 @@ def home_view(request):
     total_posts = Post.objects.all().count()
     return render(request, 'home.html', { 'posts': posts, 'total_posts': total_posts })
 
-def post_view(request, post_id, permalink):
+def post_view(request, post_id=None, permalink=None):
     """Post view, attempts to retrieve the post with the id, raising a 404 if not found. Also handles the creation of comments.
     Args:
         post_id: Primary key of the post to be shown.
         permalink: String containing the permalink for the post, if captured.
     """
     try:
-        post = Post.objects.get( id=post_id )
+        if post_id:
+            post = Post.objects.get( id=post_id )
+        elif permalink:
+            post = Post.objects.get( permalink=permalink )
+        else:
+            raise Http404
     except ObjectDoesNotExist:
         raise Http404
     else:
@@ -176,7 +182,7 @@ def delete_post_view( request, post_id ):
         return render( request, 'delete_post.html', { 'error': True, 'result' : 'Post does not exists.'} )
 
 
-def search( request ):
+def search_view( request ):
     """Search view, handles searching on posts based on arbitrary strings. See search_indexes for details.
 
     """

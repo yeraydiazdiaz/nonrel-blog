@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from djangotoolbox.fields import ListField, EmbeddedModelField
 
 class Post(models.Model):
@@ -12,7 +13,7 @@ class Post(models.Model):
     text = models.TextField()
     tags = ListField()
     comments = ListField( EmbeddedModelField( 'Comment' ) )
-    created_on = models.DateTimeField( auto_now_add=True, null=True )
+    created_on = models.DateTimeField( default=timezone.now, null=True )
     updated_on = models.DateTimeField( null=True )
     
     def create_permalink_from_title(self):
@@ -38,7 +39,7 @@ class Comment(models.Model):
     """
     author = EmbeddedModelField( 'Author' )
     text = models.TextField()
-    created_on = models.DateTimeField( auto_now_add=True )
+    created_on = models.DateTimeField( default=timezone.now, null=True )
 
     def __unicode__(self):
         return '%s: %s' % (self.author.name, self.text[:50] )
