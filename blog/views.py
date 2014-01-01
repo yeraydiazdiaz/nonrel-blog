@@ -63,21 +63,20 @@ def login_view( request ):
     """Login view, handles the creation of the form and authentication of users when the form is submitted.
     
     """
-    from django.contrib.auth.forms import AuthenticationForm
-    from django.contrib.auth import authenticate, login
+    import django.contrib.auth as auth
     if request.method == 'POST':
-        form = AuthenticationForm(request.POST)
-        username = request.POST.get( 'username', None )
-        password = request.POST.get( 'password', None )
-        if form.is_valid() and username and password:
-            user = authenticate( username=username, password=password )
+        form = auth.forms.AuthenticationForm(data=request.POST, error_class=BlogErrorList)
+        if form.is_valid():
+            username = request.POST.get( 'username', None )
+            password = request.POST.get( 'password', None )
+            user = auth.authenticate( username=username, password=password )
             if user:
-                login(request, user)
+                auth.login(request, user)
                 return HttpResponseRedirect( request.POST.get( 'next', '/' ) )
 
         return render(request, 'login.html', { 'form': add_css_classes( form ), 'login_failed': True  })
     else:
-        form = AuthenticationForm()
+        form = auth.forms.AuthenticationForm(error_class=BlogErrorList)
         next = request.GET.get('next', None)
         if next:
             import django.forms as forms 

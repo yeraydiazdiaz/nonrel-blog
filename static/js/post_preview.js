@@ -7,6 +7,7 @@
  function preview_post() {
 	 		var title = $("#post-title").val();
 	 		var text = $("#post-text").val();
+	 		text = "<p>" + text.replace(/\n/g, "</p><p>") + "</p>";
 	 		$("#post-preview").css( "padding", "1em" );
 	 		$("#post-preview").html( "<h2>"+ title +"</h2><p>"+ text +"</p><hr/>" );
 	 		$("#submit").removeAttr( "disabled" );

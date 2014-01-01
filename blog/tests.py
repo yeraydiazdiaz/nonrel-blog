@@ -181,11 +181,12 @@ class BlogTests(TestCase):
         """
         from django.contrib.auth.models import User
         reset_db()
-        create_user()
+        u = create_user()
         c = Client()
-        response = c.post( reverse('blog.views.login_view'), { 'username': 'John', 'password':'foobar' })
+        #response = c.post( reverse('blog.views.login_view'), { 'username': u.username, 'password':'foobar' })
+        response = c.post( '/login', { 'username': u.username, 'password':'foobar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error.')
-        u = User.objects.get( username='John' )
+        u = User.objects.get( username=u.username )
         self.assertEqual(c.session['_auth_user_id'], u.pk, 'Login unsuccessful.')
 
     def test_correct_logout(self):
