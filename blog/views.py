@@ -130,7 +130,7 @@ def create_post_view( request ):
             p.save()
             return HttpResponseRedirect('/post/%s/%s' % ( p.id, p.permalink ) )
         
-        return render( request, 'create_post.html', { 'form': form } )
+        return render( request, 'create_post.html', { 'form': add_css_classes( form ) } )
     else:
         return render( request, 'create_post.html', { 'form': add_css_classes( PostForm(error_class=BlogErrorList) ) } )
 

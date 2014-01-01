@@ -14,6 +14,8 @@
 	 	}
  
  $(document).ready(function() {
+ 	 $("#preview").show();
+ 	 $("#submit").attr("disabled", "disabled");
 	 $("#preview").click( function() {
 		 	var tags = $("#post-tags").val();
 		 	$("#post-tags").val( tags.replace(/,./, " ") );
