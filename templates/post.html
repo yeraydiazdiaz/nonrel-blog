@@ -9,7 +9,7 @@
 	<a href="/delete_post/{{ post.id }}" class="btn btn-primary btn-xs">Delete post</a>
 	</div>
 {% endif %}
-<p>{{ post.text }}</p>
+{{ post.text|linebreaks }}
 {% include "tag_buttons.html" %}
 <div id="comment-section">
 {% if post.comments %}

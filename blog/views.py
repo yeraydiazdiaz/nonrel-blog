@@ -41,10 +41,11 @@ def post_view(request, post_id=None, permalink=None):
         if request.method == 'POST': 
             forms = [ AuthorForm(request.POST, error_class=BlogErrorList), 
                      CommentForm(request.POST, error_class=BlogErrorList) ]
+            forms = add_css_classes( *forms )
             if forms[0].is_valid() and forms[1].is_valid(): 
                 post = save_comment( post, *forms )
         else:
-            forms = add_css_classes( AuthorForm(), CommentForm() )
+            forms = add_css_classes( AuthorForm(error_class=BlogErrorList), CommentForm(error_class=BlogErrorList) )
         return render(request, 'post.html', { 'post': post, 'forms': forms  })
 
 
@@ -65,15 +66,15 @@ def login_view( request ):
     from django.contrib.auth.forms import AuthenticationForm
     from django.contrib.auth import authenticate, login
     if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
         username = request.POST.get( 'username', None )
         password = request.POST.get( 'password', None )
-        if username and password:
+        if form.is_valid() and username and password:
             user = authenticate( username=username, password=password )
             if user:
                 login(request, user)
                 return HttpResponseRedirect( request.POST.get( 'next', '/' ) )
-        
-        form = AuthenticationForm(request.POST, error_class=BlogErrorList)
+
         return render(request, 'login.html', { 'form': add_css_classes( form ), 'login_failed': True  })
     else:
         form = AuthenticationForm()
@@ -98,7 +99,7 @@ def register_view( request ):
     """
     import django.contrib.auth as auth
     if request.method == 'POST':
-        form = auth.forms.UserCreationForm( request.POST )
+        form = auth.forms.UserCreationForm( request.POST, error_class=BlogErrorList )
         if form.is_valid():
             username = request.POST.get( 'username', None )
             password1 = request.POST.get( 'password1', None )
@@ -110,10 +111,9 @@ def register_view( request ):
                     auth.login(request, user)
                     return HttpResponseRedirect( request.REQUEST.get( 'next', '/' ) )
         else:
-            form = auth.forms.UserCreationForm(request.POST, error_class=BlogErrorList)
-            return render(request, 'register.html', { 'form': add_css_classes( form ), 'registration_failed': True  })
+            return render(request, 'register.html', { 'form': add_css_classes( form )  })
     else:
-        form = auth.forms.UserCreationForm()
+        form = auth.forms.UserCreationForm( error_class=BlogErrorList )
         return render(request, 'register.html', { 'form': add_css_classes( form ) })
 
 @login_required
@@ -133,7 +133,7 @@ def create_post_view( request ):
         
         return render( request, 'create_post.html', { 'form': form } )
     else:
-        return render( request, 'create_post.html', { 'form': add_css_classes( PostForm() ) } )
+        return render( request, 'create_post.html', { 'form': add_css_classes( PostForm(error_class=BlogErrorList) ) } )
 
 @login_required
 def edit_post_view( request, post_id ):
@@ -222,7 +222,10 @@ def add_css_classes( *forms ):
                 form.fields[field].widget.attrs.update( { 'class': 'form-control input-sm' } )
         except AttributeError:
             form.field.widget.attrs.update( { 'class': 'form-control input-sm' } )
-            
+
+        if len(forms) == 1:
+            return form     # return the single form rather that a 1-sized tuple
+    
     return forms
 
 def save_comment( post, author_form, comment_form ):
