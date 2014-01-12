@@ -9,7 +9,7 @@ from djangoappengine.settings_base import *
 
 # Activate django-dbindexer for the default database
 DATABASES['native'] = DATABASES['default']
-DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native', 'DEV_APPSERVER_OPTIONS': {'use_sqlite': True } }
+DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native', 'DEV_APPSERVER_OPTIONS': {'use_sqlite': True }, 'HIGH_REPLICATION': True }
 AUTOLOAD_SITECONF = 'indexes'
 
 INSTALLED_APPS = (
@@ -31,7 +31,6 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     # This loads the index definitions, so it has to come first
     'autoload.middleware.AutoloadMiddleware',
-
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

@@ -73,8 +73,12 @@ def login_view( request ):
             if user:
                 auth.login(request, user)
                 return HttpResponseRedirect( request.POST.get( 'next', '/' ) )
-
-        return render(request, 'login.html', { 'form': add_css_classes( form ), 'login_failed': True  })
+            else:
+                data = request.POST
+                login_form = auth.forms.AuthenticationForm(data, error_class=BlogErrorList)
+                return render(request, 'login.html', { 'form': add_css_classes( login_form ), 'login_failed': True  })
+        else:
+            return render(request, 'login.html', { 'form': add_css_classes( form ), 'login_failed': True  })
     else:
         form = auth.forms.AuthenticationForm(error_class=BlogErrorList)
         next = request.GET.get('next', None)
@@ -102,13 +106,14 @@ def register_view( request ):
         if form.is_valid():
             username = request.POST.get( 'username', None )
             password1 = request.POST.get( 'password1', None )
-            password2 = request.POST.get( 'password2', None )
-            if username and password1 and password2 and password1 == password2:
-                auth.models.User.objects.create_user( username=username, password=password1 )
-                user = auth.authenticate( username=username, password=password1 )
-                if user is not None:
-                    auth.login(request, user)
-                    return HttpResponseRedirect( request.REQUEST.get( 'next', '/' ) )
+            auth.models.User.objects.create_user( username=username, password=password1 )
+            user = auth.authenticate( username=username, password=password1 )
+            if user != None:
+                auth.login(request, user)
+                return HttpResponseRedirect( request.REQUEST.get( 'next', '/' ) )
+            else:
+                login_form = auth.forms.AuthenticationForm( data= { 'username': username, 'password': password1 }, error_class=BlogErrorList)
+                return render(request, 'login.html', { 'form': add_css_classes( login_form ) } )
         else:
             return render(request, 'register.html', { 'form': add_css_classes( form )  })
     else:
