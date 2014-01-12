@@ -9,9 +9,12 @@ class ModelBackend(object):
 
     # TODO: Model, login attribute name and password attribute name should be
     # configurable.
-    def authenticate(self, username=None, password=None):
+    def authenticate(self, username=None, password=None, id=None):
         try:
-            user = User.objects.get(username=username)
+            if id:
+                user = User.objects.get(id=id) # fetching by ID rather than a query allows for strong consistency in cases of registration and immediate login.
+            else:
+                user = User.objects.get(username=username)
             if user.check_password(password):
                 return user
         except User.DoesNotExist:

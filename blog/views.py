@@ -106,8 +106,9 @@ def register_view( request ):
         if form.is_valid():
             username = request.POST.get( 'username', None )
             password1 = request.POST.get( 'password1', None )
-            auth.models.User.objects.create_user( username=username, password=password1 )
-            user = auth.authenticate( username=username, password=password1 )
+            user = auth.models.User.objects.create_user( username=username, password=password1 )
+            # pass the id of the created user to ensure strong consistency by fetching through ID rather than a normal username query
+            user = auth.authenticate( username=username, password=password1, id=user.id )
             if user != None:
                 auth.login(request, user)
                 return HttpResponseRedirect( request.REQUEST.get( 'next', '/' ) )
