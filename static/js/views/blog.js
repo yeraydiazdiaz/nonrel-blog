@@ -9,13 +9,26 @@ app.BlogView = Backbone.View.extend({
         this.collection.fetch({reset: true});
 
         this.listenTo(this.collection, 'reset', this.render);
+        this.listenTo(app.BlogRouter, 'route:viewPost', this.renderPostView);
+        this.listenTo(app.BlogRouter, 'route:home', this.backToHome);
     },
 
     render: function() {
-        var postListView = new app.PostListView({
+        this.postListView = new app.PostListView({
             collection: this.collection
         });
-        this.$el.append(postListView.render().el);
+        this.$el.append(this.postListView.render().el);
+    },
+
+    renderPostView: function(param) {
+        this.postView = new app.PostView({
+            model: this.collection.get(param)
+        })
+        this.$el.append(this.postView.render().el);
+    },
+
+    backToHome: function() {
+        this.postView.remove();
     }
 
 });

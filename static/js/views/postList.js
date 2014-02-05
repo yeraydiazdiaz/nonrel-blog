@@ -21,6 +21,8 @@ app.PostListView = Backbone.View.extend({
     initialize: function() {
         this.listenTo(this.collection, 'add', this.renderPostList);
         this.listenTo(this.collection, 'sync', this.checkForMorePosts);
+        this.listenTo(app.BlogRouter, 'route:viewPost', this.hideView);
+        this.listenTo(app.BlogRouter, 'route:home', this.showView);
     },
 
     render: function() {
@@ -50,6 +52,14 @@ app.PostListView = Backbone.View.extend({
         if (this.collection.next !== null) {
             this.$el.append($('#loadMoreTemplate').html());
         }
+    },
+
+    hideView: function() {
+        this.$el.hide();
+    },
+
+    showView: function() {
+        this.$el.fadeIn();
     }
 
 });

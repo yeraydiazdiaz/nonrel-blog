@@ -1,13 +1,11 @@
 
+var app = app || {};
+
 var Workspace = Backbone.Router.extend({
 
     routes: {
+        '': 'home',
         'post/*postID': 'viewPost'
-    },
-
-    viewPost: function(param) {
-        window.app.PostID = param ;
-        window.app.BlogView.trigger('viewPost');
     }
 
 });

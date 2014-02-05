@@ -47,7 +47,7 @@
         </div>
         <!-- end main div -->
         <script id="postListTemplate" type="text/template">
-            <h2><a href="#"><%- title  %></a></h2>
+            <h2><a href="#post/<%- id %>"><%- title %></a></h2>
             <p><small><%= created_on %></small></p>
             <ul>
             <% _.each(tags.listItems, function(listItem) { %>
@@ -88,6 +88,7 @@
         <script type="text/javascript" src="/static/js/lib/underscore-min.js"></script>
         <script type="text/javascript" src="/static/js/lib/backbone-min.js"></script>
         <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/routers/router.js"></script>
         <script type="text/javascript" src="/static/js/models/post.js"></script>
         <script type="text/javascript" src="/static/js/collections/blog.js"></script>
         <script type="text/javascript" src="/static/js/views/postList.js"></script>
