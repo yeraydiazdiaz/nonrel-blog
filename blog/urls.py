@@ -1,11 +1,12 @@
 """
 
-	URLs for blog app
+    URLs for blog app
 
 """
 
 import os
 from django.contrib import admin
+from django.views.generic import TemplateView
 from django.conf.urls import *
 from rest_framework.urlpatterns import format_suffix_patterns
 import api_views
@@ -19,7 +20,7 @@ api_urlpatterns = patterns('blog.api_views',
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)
 
 urlpatterns = patterns(r'blog.views',
-    (r'^$', 'home_view'),
+    (r'^$', TemplateView.as_view(template_name='backbone_base.html')),
     (r'^post/comment/(?P<post_id>.+)/(?P<permalink>.+)$', 'post_view'),
     (r'^post/(?P<post_id>.+)/(?P<permalink>.+)$', 'post_view'),
     (r'^post/(?P<permalink>.+)$', 'post_view'),

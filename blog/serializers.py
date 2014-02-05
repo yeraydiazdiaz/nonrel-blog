@@ -10,16 +10,19 @@ from blog.models import *
 
 
 class CommentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment
 
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
+    created_on = serializers.Field(source='created_on_readable')
+
     class Meta:
         model = Post
 
-
 class PostPaginationSerializer(PaginationSerializer):
+
     class Meta:
         object_serializer_class = PostSerializer

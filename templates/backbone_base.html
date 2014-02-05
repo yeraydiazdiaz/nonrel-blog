@@ -46,7 +46,50 @@
         {% block content %}{% endblock %}
         </div>
         <!-- end main div -->
+        <script id="postListTemplate" type="text/template">
+            <h2><a href="#"><%- title  %></a></h2>
+            <p><small><%= created_on %></small></p>
+            <ul>
+            <% _.each(tags.listItems, function(listItem) { %>
+            <a href="/tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>
+            <% }); %>
+            </ul>
+            <p><% print(text.substring(0,250)); %>...</p>
+            <p class="right-italic"><% print(comments.length); %> comments</p>
+        </script>
+        <script id="postTemplate" type="text/template">
+            <h1><%= title %></h1>
+            <p class="date">Posted on <%= created_on %></p>
+            <% if (tags.length > 0) { %>
+                <ul>
+                <% _.each(tags.listItems, function(listItem) { %>
+                <a href="/tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>
+                <% }); %>
+                </ul>
+            <% } %>
+            <p><%- text %></p>
+            <% if (comments.length > 0) { %>
+            <div id="comment-section">
+                <% _.each(comments.listItems, function(listItem) { %>
+                <div class="comment">
+                    <p><small><%- comment.text %></small></p>
+                    <p class="text-right"><small>by <%- comment.author.name %> - <%- comment.author.email %></small></p>
+                <% }); %>
+                </div>
+            <% }else{ %>
+                <h3>No comments</h3>
+            <% } %>
+            </div>
+        </script>
         <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="/static/js/lib/underscore-min.js"></script>
+        <script type="text/javascript" src="/static/js/lib/backbone-min.js"></script>
         <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/models/post.js"></script>
+        <script type="text/javascript" src="/static/js/collections/blog.js"></script>
+        <script type="text/javascript" src="/static/js/views/postList.js"></script>
+        <script type="text/javascript" src="/static/js/views/post.js"></script>
+        <script type="text/javascript" src="/static/js/views/blog.js"></script>
+        <script type="text/javascript" src="/static/js/app.js"></script>
     </body>
 </html>

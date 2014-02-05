@@ -15,7 +15,10 @@ class Post(models.Model):
     comments = ListField( EmbeddedModelField( 'Comment' ) )
     created_on = models.DateTimeField( default=timezone.now, null=True )
     updated_on = models.DateTimeField( null=True )
-    
+
+    def created_on_readable(self):
+        return self.created_on.ctime()
+
     def create_permalink_from_title(self):
         """Create a permalink based on filtering words and whitespaces into underscores.
         

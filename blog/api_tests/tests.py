@@ -20,7 +20,8 @@ class BlogAPITests(TestCase):
         c = Client()
         response = c.get('/api/posts')
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
-        self.assertEquals(len(json.loads(response.content)), 0, 'Expected 0 results')
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 0, 'Expected 0 results')
 
     def test_post_list_returns_one_post(self):
         """
@@ -31,4 +32,6 @@ class BlogAPITests(TestCase):
         c = Client()
         response = c.get('/api/posts')
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
-        self.assertEquals(len(json.loads(response.content)), 1, 'Expected 1 result')
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 1, 'Expected 1 result')
+
