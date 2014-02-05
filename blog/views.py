@@ -8,8 +8,6 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from blog.models import Post
 from blog.forms import *
 
 INITIAL_POSTS = 2
@@ -246,7 +244,7 @@ def save_comment( post, author_form, comment_form ):
 def get_more_posts( GET ):
     """Function to retrieve additional posts.
     """
-    from django.template import Template, Context, loader
+    from django.template import Context, loader
     page = GET.get('page', None)
     start = int( GET.get('start', 0) )
     total = int( GET.get('total', 0) )
