@@ -11,6 +11,7 @@ from django.core import management
 from django.core.urlresolvers import reverse
 from blog.models import *
 from test_aux import *
+from api_tests.tests import *
 from cgitb import reset
 
 class BlogTests(TestCase):
@@ -398,4 +399,3 @@ class BlogTests(TestCase):
             p = create_post('Test post %s' %i, u)
         response = c.get( reverse('blog.views.load_posts_view'), { 'page': 'search', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': 'test' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
         self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
-    
