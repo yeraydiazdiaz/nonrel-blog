@@ -35,6 +35,21 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class TagGenericList(generics.ListAPIView):
+    """
+    API view for lists of Posts tagged with a particular string, responds to /api/posts/tag/TAG.
+    By default we sort by inverse creation date and we paginate.
+    """
+    lookup_url_kwarg = 'tag'
+    serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    paginate_by = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
+
+    def get_queryset(self):
+        tag = self.kwargs.get(self.lookup_url_kwarg)
+        return Post.objects.filter(tags__in=[tag])
+
+
 @api_view(('GET',))
 def api_root(request, format=None):
     """

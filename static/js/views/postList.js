@@ -29,7 +29,7 @@ app.PostListView = Backbone.View.extend({
         this.collection.each(function(item) {
             this.renderPostList(item);
         }, this);
-        if (this.collection.next !== null) {
+        if (this.collection.next !== null && $('#load-more-posts').get(0) == undefined) {
             this.$el.append($('#loadMoreTemplate').html());
         }
         return this;
@@ -52,7 +52,7 @@ app.PostListView = Backbone.View.extend({
     },
 
     checkForMorePosts: function() {
-        if (this.collection.next !== null) {
+        if (this.collection.next !== null && $('#load-more-posts').get(0) == undefined) {
             this.$el.append($('#loadMoreTemplate').html());
         }
     },

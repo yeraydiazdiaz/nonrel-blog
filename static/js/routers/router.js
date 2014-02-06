@@ -5,7 +5,8 @@ var Workspace = Backbone.Router.extend({
 
     routes: {
         '': 'home',
-        'post/*postID': 'viewPost'
+        'post/*postID': 'viewPost',
+        'tag/*tag': 'tag'
     }
 
 });

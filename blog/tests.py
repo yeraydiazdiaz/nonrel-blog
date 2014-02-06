@@ -35,7 +35,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.get( reverse('blog.views.home_view') )
+        response = c.get(reverse('blog.views.home_view') )
         self.assertEqual(response.status_code, 200)
         self.assertEqual( len(response.context['posts']), 0 )
 
@@ -46,7 +46,7 @@ class BlogTests(TestCase):
         reset_db()
         p = create_post_with_comments()
         c = Client()
-        response = c.get( reverse('blog.views.home_view') )
+        response = c.get(reverse('blog.views.home_view') )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len(response.context['posts']), 1, 'Expected only one post.')
         
@@ -59,7 +59,7 @@ class BlogTests(TestCase):
         for i in xrange(INITIAL_POSTS+1):
             create_post_with_comments()
         c = Client()
-        response = c.get( reverse('blog.views.home_view') )
+        response = c.get(reverse('blog.views.home_view') )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len(response.context['posts']), INITIAL_POSTS, 'Unexpected number of posts.')   
     
@@ -80,7 +80,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.get( reverse('blog.views.post_view', args=['foobar'] ) )
+        response = c.get(reverse('blog.views.post_view', args=['foobar'] ) )
         self.assertEqual(response.status_code, 404, 'Expected 404.')    
 
     def test_post_view_with_permalink(self):
@@ -90,7 +90,7 @@ class BlogTests(TestCase):
         reset_db()
         p = create_post_with_comments()
         c = Client()
-        response = c.get( reverse('blog.views.post_view', args=[p.permalink] ) )
+        response = c.get(reverse('blog.views.post_view', args=[p.permalink] ) )
         self.assertEqual(response.status_code, 200, 'Expected 200.')
         self.assertEqual(response.context['post'].id, p.id, 'Mismatch on post ids.')
         
@@ -101,7 +101,7 @@ class BlogTests(TestCase):
         reset_db()
         p = create_post_with_comments()
         c = Client()
-        response = c.get( reverse('blog.views.post_view', args=[p.id, p.permalink] ) )
+        response = c.get(reverse('blog.views.post_view', args=[p.id, p.permalink] ) )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         for f in response.context['forms']:
             self.assertIsNotNone(f.errors, 'Expected error, got None on form %s.' % f)
@@ -114,7 +114,7 @@ class BlogTests(TestCase):
         p = create_post_with_comments()
         original_num_comments = len( p.comments )
         c = Client()
-        response = c.post( reverse( 'blog.views.post_view',args=[p.id, p.permalink] ), 
+        response = c.post(reverse( 'blog.views.post_view',args=[p.id, p.permalink] ), 
                            {
                                 'name': 'John',
                                 'email': 'john@example.org',
@@ -142,7 +142,7 @@ class BlogTests(TestCase):
             p.save()
         
         c = Client()
-        response = c.get( reverse('blog.views.tag_view', args=[ tags[0] ] ) )
+        response = c.get(reverse('blog.views.tag_view', args=[ tags[0] ] ) )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual( response.context['total_posts'], 3, 'Incorrect number of posts returned.')
 
@@ -152,7 +152,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.get( reverse('blog.views.tag_view', args=[ 'foo' ] ) )
+        response = c.get(reverse('blog.views.tag_view', args=[ 'foo' ] ) )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len( response.context['posts'] ), 0, 'Incorrect number of posts returned.')
 
@@ -162,7 +162,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.post( reverse('blog.views.login_view') )    
+        response = c.post(reverse('blog.views.login_view') )    
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertIsNotNone(response.context['form'], 'No login form in login page.')
 
@@ -172,7 +172,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.post( reverse('blog.views.login_view'), { 'username': 'foo', 'password':'bar' })   
+        response = c.post(reverse('blog.views.login_view'), { 'username': 'foo', 'password':'bar' })   
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertIsNotNone(response.context['login_failed'], 'Unexpected non errors on login form.')
 
@@ -184,7 +184,7 @@ class BlogTests(TestCase):
         reset_db()
         u = create_user()
         c = Client()
-        #response = c.post( reverse('blog.views.login_view'), { 'username': u.username, 'password':'foobar' })
+        #response = c.post(reverse('blog.views.login_view'), { 'username': u.username, 'password':'foobar' })
         response = c.post( '/login', { 'username': u.username, 'password':'foobar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error.')
         u = User.objects.get( username=u.username )
@@ -241,7 +241,7 @@ class BlogTests(TestCase):
 
         """
         c = Client()
-        response = c.get( reverse('blog.views.create_post_view') )
+        response = c.get(reverse('blog.views.create_post_view') )
         self.assertEqual(response.status_code, 302, 'Expected HTTP redirection on create post view.')
 
     def test_create_post_view(self):
@@ -252,8 +252,8 @@ class BlogTests(TestCase):
         u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
         u.save()
         c = Client()
-        c.post( reverse('blog.views.login_view'), { 'username': 'John', 'password':'foobar' })
-        response = c.get( reverse('blog.views.create_post_view') )
+        c.post(reverse('blog.views.login_view'), { 'username': 'John', 'password':'foobar' })
+        response = c.get(reverse('blog.views.create_post_view') )
         self.assertEqual(response.status_code, 200, 'HTTP error on create post view.')
 
     def test_create_post_correctly(self):
@@ -265,7 +265,7 @@ class BlogTests(TestCase):
         title = 'test_create_post_correctly'
         text = 'This is a test post'
         tags = 'tag1 tag2 tag3'
-        response = c.post( reverse('blog.views.create_post_view'), { 'title': title, 
+        response = c.post(reverse('blog.views.create_post_view'), { 'title': title, 
                                                                     'text': text,
                                                                     'tags':  tags} )
         self.assertEqual(response.status_code, 302, 'Expected HTTP redirection on create post view.')
@@ -283,7 +283,7 @@ class BlogTests(TestCase):
         p = create_post()
         prev_post_count = Post.objects.all().count()
         c = Client()
-        response = c.get( reverse('blog.views.delete_post_view', args=[ p.id ]) )
+        response = c.get(reverse('blog.views.delete_post_view', args=[ p.id ]) )
         self.assertEqual(response.status_code, 302, 'Expected HTTP redirection.')
         self.assertEqual( Post.objects.all().count() , prev_post_count, 'Expected same number of posts.')
         
@@ -293,7 +293,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         response, c, u = create_and_login_user()
-        response = c.get( reverse('blog.views.delete_post_view', args=[ 1 ]) )
+        response = c.get(reverse('blog.views.delete_post_view', args=[ 1 ]) )
         self.assertEqual( Post.objects.all().count() , 0, 'Expected no posts.')
         
     def test_delete_post_correctly(self):
@@ -303,7 +303,7 @@ class BlogTests(TestCase):
         reset_db()
         response, c, u = create_and_login_user()
         p = create_post('title', u)
-        response = c.get( reverse('blog.views.delete_post_view', args=[ p.id ]) )
+        response = c.get(reverse('blog.views.delete_post_view', args=[ p.id ]) )
         self.assertEqual( Post.objects.all().count() , 0, 'Expected no posts.')
         
     def test_edit_requires_auth(self):
@@ -313,7 +313,7 @@ class BlogTests(TestCase):
         reset_db()
         p = create_post()
         c = Client()
-        response = c.get( reverse('blog.views.edit_post_view', args=[ p.id ] ) )
+        response = c.get(reverse('blog.views.edit_post_view', args=[ p.id ] ) )
         self.assertEqual(response.status_code, 302, 'Expected HTTP redirection.')
         
     def test_edit_non_existing_post_fails(self):
@@ -322,7 +322,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         response, c, u = create_and_login_user()
-        response = c.get( reverse('blog.views.edit_post_view', args=[ 1 ] ) )
+        response = c.get(reverse('blog.views.edit_post_view', args=[ 1 ] ) )
         self.assertEqual( response.context['error'] , True, 'Expected error in context.')
         
     def test_edit_post_correctly(self):
@@ -333,7 +333,7 @@ class BlogTests(TestCase):
         response, c, u = create_and_login_user()
         p = create_post('Test post', u)
         orig_text = p.text
-        response = c.post( reverse('blog.views.edit_post_view', args=[ p.id ] ), {
+        response = c.post(reverse('blog.views.edit_post_view', args=[ p.id ] ), {
                                                     'title': p.title+' edited',
                                                     'text': p.text+' edited',
                                                     'tags:': ' '.join(p.tags),
@@ -350,7 +350,7 @@ class BlogTests(TestCase):
         r, c, u = create_and_login_user()
         for i in xrange(10):
             create_post('Test post %s' %i, u)
-        response = c.get( reverse('blog.views.search_view'), { 'q': 'Test' } )
+        response = c.get(reverse('blog.views.search_view'), { 'q': 'Test' } )
         self.assertGreater( len( response.context['posts'] ), 0, 'Expected at least one hit.')
         
     def test_search_with_no_hits(self):
@@ -359,7 +359,7 @@ class BlogTests(TestCase):
         """
         reset_db()
         c = Client()
-        response = c.get( reverse('blog.views.search_view'), { 'q': 'Test' } )
+        response = c.get(reverse('blog.views.search_view'), { 'q': 'Test' } )
         self.assertEquals( len( response.context['posts'] ), 0, 'Expected no hits.')
         
     def test_load_home_posts_successfully(self):
@@ -371,7 +371,7 @@ class BlogTests(TestCase):
         r, c, u = create_and_login_user()
         for i in xrange(10):
             create_post('Test post %s' %i, u)
-        response = c.get( reverse('blog.views.load_posts_view'), { 'page': 'home', 'start': str(INITIAL_POSTS), 'total': '10' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        response = c.get(reverse('blog.views.load_posts_view'), { 'page': 'home', 'start': str(INITIAL_POSTS), 'total': '10' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
         self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
         
     def test_load_tag_posts_successfully(self):
@@ -385,7 +385,7 @@ class BlogTests(TestCase):
             p = create_post('Test post %s' %i, u)
             p.tags = [ tags[0] ]
             p.save()
-        response = c.get( reverse('blog.views.load_posts_view'), { 'page': 'tag', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': tags[0] }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        response = c.get(reverse('blog.views.load_posts_view'), { 'page': 'tag', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': tags[0] }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
         self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')
         
     def test_load_search_posts_successfully(self):
@@ -397,5 +397,5 @@ class BlogTests(TestCase):
         r, c, u = create_and_login_user()
         for i in xrange(10):
             p = create_post('Test post %s' %i, u)
-        response = c.get( reverse('blog.views.load_posts_view'), { 'page': 'search', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': 'test' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
+        response = c.get(reverse('blog.views.load_posts_view'), { 'page': 'search', 'start': str(INITIAL_POSTS), 'total': '10', 'terms': 'test' }, "text/json", HTTP_X_REQUESTED_WITH='XMLHttpRequest' )
         self.assertEquals( len( response.context['posts'] ), INITIAL_POSTS, 'Expected INITIAL_POSTS context.')

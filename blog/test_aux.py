@@ -28,7 +28,7 @@ authors = [
 # Tags list
 tags = [ 'Abbey', 'Yellow', 'Revolver', 'Help' ]
 
-def create_post( title=None, user=None):
+def create_post( title=None, user=None, tags=None):
     """Auxiliar function to create a post.
     Args:
         title: Optional string to be used as title for the post.
@@ -38,9 +38,11 @@ def create_post( title=None, user=None):
     if not title:
         title='Test post'
 
+    if not tags:
+        tags = get_random_tags()
     p = Post.objects.create( title=title,
                                 text=lipsum[ randrange( len(lipsum) ) ],
-                                tags=get_random_tags()
+                                tags=tags
                             )
     if user:
         p.user_id = user.id

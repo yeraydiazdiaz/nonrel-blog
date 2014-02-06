@@ -48,25 +48,24 @@
         <!-- end main div -->
         <script id="postListTemplate" type="text/template">
             <h2><a href="#post/<%- id %>"><%- title %></a></h2>
-            <p><small><strong><%= created_on_readable %></strong></small></p>
-            <ul>
-            <% _.each(tags.listItems, function(listItem) { %>
-            <a href="/tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>
-            <% }); %>
-            </ul>
+            <p><small><strong><%= created_on_readable %></strong></small>
+            <% if (tags.length > 0) { %>
+                <% _.each(tags, function(tag) { %>
+                <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%- tag %></button></a>
+                <% }); %>
+            <% } %></p>
             <p><% print(text.substring(0,250)); %>...</p>
             <p class="right-italic"><% print(comments.length); %> comments</p>
         </script>
         <script id="postTemplate" type="text/template">
             <h1><%= title %></h1>
-            <p class="date">Posted on <%= created_on %></p>
+            <p class="date">Posted on <%= created_on_readable %>
             <% if (tags.length > 0) { %>
-                <ul>
-                <% _.each(tags.listItems, function(listItem) { %>
-                <a href="/tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>
+                <% _.each(tags, function(tag) { %>
+                <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%- tag %></button></a>
                 <% }); %>
-                </ul>
             <% } %>
+            </p>
             <p><%- text %></p>
             <% if (comments.length > 0) { %>
             <div id="comment-section">

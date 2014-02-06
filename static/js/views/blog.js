@@ -8,10 +8,14 @@ app.BlogView = Backbone.View.extend({
         this.listenTo(this.collection, 'reset', this.render);
         this.listenTo(app.blogRouter, 'route:viewPost', this.getFromCollectionOrFetch);
         this.listenTo(app.blogRouter, 'route:home', this.backToHome);
+        this.listenTo(app.blogRouter, 'route:tag', this.tag);
     },
 
-    render: function() {
-        this.postListView = new app.PostListView({ collection: this.collection });
+    render: function(collection) {
+        if (collection === undefined) {
+            collection = this.collection;
+        }
+        this.postListView = new app.PostListView({ collection: collection });
         this.$el.append(this.postListView.render().el);
     },
 
@@ -45,6 +49,19 @@ app.BlogView = Backbone.View.extend({
 
     fetchError: function() {
         alert('Fetch error');
+    },
+
+    tag: function(param) {
+        if (this.postListView) {
+            this.postListView.remove();
+        }
+        this.tagged_collection = new app.BlogCollection([])
+        this.tagged_collection.url = '/api/posts/tag/' + param
+        this.tagged_collection.fetch({success: this.onCollectionFetchComplete, error: this.fetchError});
+    },
+
+    onCollectionFetchComplete: function(e) {
+        app.blogView.render(app.blogView.tagged_collection);
     }
 
 });
