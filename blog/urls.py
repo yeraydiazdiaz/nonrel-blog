@@ -13,8 +13,8 @@ import api_views
 
 api_urlpatterns = patterns('blog.api_views',
     url(r'^$', 'api_root'),
-    url(r'^posts$', api_views.PostGenericList.as_view(), name='posts-list'),
-    url(r'^posts/(?P<pk>[0-9]+)$', api_views.PostGenericDetail.as_view(), name='posts-detail'),
+    url(r'^posts$', api_views.PostGenericList.as_view(), name='post-list'),
+    url(r'^posts/(?P<pk>[0-9]+)$', api_views.PostGenericDetail.as_view(), name='post-detail'),
 )
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)

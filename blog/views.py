@@ -24,7 +24,7 @@ def home_view(request):
     total_posts = posts.count()
     paginator = Paginator(posts, INITIAL_POSTS)
     paged_posts = paginator.page(1)
-    serializer = serializers.PostPaginationSerializer(paged_posts)
+    serializer = serializers.PostPaginationSerializer(paged_posts, context={'request': request})
     paginated_models_json = JSONRenderer().render(serializer.data['results'])
     return render(request, 'home.html', {'posts': posts,
                                          'total_posts': total_posts,

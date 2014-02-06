@@ -1,7 +1,7 @@
 
 var app = app || {};
 
-app.Blog = Backbone.Collection.extend({
+app.BlogCollection = Backbone.Collection.extend({
     model: app.Post,
     url: '/api/posts',
 

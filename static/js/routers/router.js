@@ -9,6 +9,3 @@ var Workspace = Backbone.Router.extend({
     }
 
 });
-
-app.BlogRouter = new Workspace();
-Backbone.history.start();

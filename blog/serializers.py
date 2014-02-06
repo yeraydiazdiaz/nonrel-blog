@@ -35,6 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
     created_on_readable = serializers.Field(source='created_on_readable')
 
+
     class Meta:
         model = Post
 

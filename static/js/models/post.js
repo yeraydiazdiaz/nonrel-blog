@@ -10,4 +10,5 @@ app.Post = Backbone.Model.extend({
         tags: [],
         comments: []
     }
+
 });

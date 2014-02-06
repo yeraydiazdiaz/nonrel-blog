@@ -27,7 +27,7 @@ class PostGenericList(generics.ListCreateAPIView):
 
 class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     """
-    API view for detail on Posts, responds to /api/post.
+    API view for detail on Posts, responds to /api/posts/ID.
     Restricted access on update and delete.
     """
     queryset = Post.objects.all()

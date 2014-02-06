@@ -18,13 +18,20 @@
 {% block backbone_init %}
 {% autoescape off %}
     <script type="text/javascript">
-        if (window.app) {
-            app.BlogCollection = new app.Blog();
-            new app.BlogView({collection: app.BlogCollection});
-            app.BlogCollection.next = '{{ next }}';
-            app.BlogCollection.count = {{ total_posts }};
-            app.BlogCollection.reset({{ models_json }});
-        }
+        $(function() {
+            app.blogCollection = new app.BlogCollection();
+            app.blogRouter = new Workspace();
+            app.blogView = new app.BlogView({collection: app.blogCollection});
+            Backbone.history.start();
+            if (window.app && window.location.hash === '') {
+                app.blogCollection.next = '{{ next }}';
+                app.blogCollection.count = {{ total_posts }};
+                app.blogCollection.reset({{ models_json }});
+            }else{
+                var route = window.location.hash.substring(1,window.location.hash.length);
+                app.blogRouter.navigate(route, {trigger: true, replace: true});
+            }
+        });
     </script>
 {% endautoescape %}
 {% endblock %}

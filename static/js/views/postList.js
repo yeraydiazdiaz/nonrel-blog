@@ -21,8 +21,8 @@ app.PostListView = Backbone.View.extend({
     initialize: function() {
         this.listenTo(this.collection, 'add', this.renderPostList);
         this.listenTo(this.collection, 'sync', this.checkForMorePosts);
-        this.listenTo(app.BlogRouter, 'route:viewPost', this.hideView);
-        this.listenTo(app.BlogRouter, 'route:home', this.showView);
+        this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
+        this.listenTo(app.blogRouter, 'route:home', this.showView);
     },
 
     render: function() {
