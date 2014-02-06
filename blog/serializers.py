@@ -26,6 +26,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
+        fields = ('author', 'text', 'created_on_readable')
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -35,9 +36,9 @@ class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
     created_on_readable = serializers.Field(source='created_on_readable')
 
-
     class Meta:
         model = Post
+        fields = ('title', 'permalink', 'user_id', 'text', 'tags', 'comments', 'created_on_readable')
 
 
 class PostPaginationSerializer(PaginationSerializer):

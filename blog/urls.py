@@ -15,6 +15,7 @@ api_urlpatterns = patterns('blog.api_views',
     url(r'^$', 'api_root'),
     url(r'^posts$', api_views.PostGenericList.as_view(), name='post-list'),
     url(r'^posts/(?P<pk>[0-9]+)$', api_views.PostGenericDetail.as_view(), name='post-detail'),
+    url(r'^posts/(?P<pk>[0-9]+)/comments$', api_views.CommentsGenericDetail.as_view(), name='comments'),
     url(r'^posts/tag/(?P<tag>.+)$', api_views.TagGenericList.as_view(), name='tag'),
 )
 

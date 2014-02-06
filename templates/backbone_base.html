@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="csrf-token" content="{{csrf_token}}">
         <title>{% block title %}{% endblock %} NonRel Blog</title>
         <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="/static/nonrel-blog.css" />
@@ -73,12 +74,27 @@
                 <div class="comment<% if (index % 2 == 0) { %> even <% } else { %> odd <% } %>">
                     <p><%- item.text %></p>
                     <p class="text-right"><small>by <%- item.author.name %> - <%- item.author.email %><br />on <%- item.created_on_readable %></small></p>
-                <% }); %>
                 </div>
+                <% }); %>
             <% }else{ %>
                 <h3>No comments</h3>
             <% } %>
             </div>
+            <hr/>
+            <p>Add a comment:</p>
+            <div class="fieldWrapper form-group">
+                <label for="id_name">Name:</label>
+                <input id="id_name" class="form-control input-sm" type="text" placeholder="Your Name" maxlength="255" name="name"></input>
+            </div>
+            <div class="fieldWrapper form-group">
+                <label for="id_email">Email:</label>
+                <input id="id_email" class="form-control input-sm" type="text" placeholder="you@example.org" maxlength="75" name="email"></input>
+            </div>
+            <div class="fieldWrapper form-group">
+                <label for="id_text">Comment:</label>
+                <textarea id="id_text" class="form-control input-sm" cols="80" placeholder="Your comment ..." name="text" rows="10"></textarea>
+            </div>
+            <p><input type="submit" value="Submit comment" class="btn btn-primary" id="comment-submit" /></p>
         </script>
         <script id="loadMoreTemplate" type="text/template">
             <p class="text-center"><a id="load-more-posts" class="btn btn-primary">Load more posts...</a></p>

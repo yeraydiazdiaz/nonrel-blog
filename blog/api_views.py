@@ -49,6 +49,26 @@ class TagGenericList(generics.ListAPIView):
         tag = self.kwargs.get(self.lookup_url_kwarg)
         return Post.objects.filter(tags__in=[tag])
 
+class CommentsGenericDetail(generics.CreateAPIView):
+    """
+    API view for creating comments on a post, responds to /api/posts/ID/comments.
+    Restricted access on update and delete.
+    """
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        return Post.objects.get(pk=self.kwargs.get(self.lookup_field))
+
+    def pre_save(self, obj):
+        try:
+            post = Post.objects.get(pk=self.kwargs.get(self.lookup_field))
+            post.comments.append(obj)
+            post.save()
+        except Post.DoesNotExist:
+            from django.http import Http404
+            raise Http404
+
 
 @api_view(('GET',))
 def api_root(request, format=None):
