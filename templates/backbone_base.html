@@ -70,10 +70,10 @@
             <p><%- text %></p>
             <% if (comments.length > 0) { %>
             <div id="comment-section">
-                <% _.each(comments.listItems, function(listItem) { %>
-                <div class="comment">
-                    <p><small><%- comment.text %></small></p>
-                    <p class="text-right"><small>by <%- comment.author.name %> - <%- comment.author.email %></small></p>
+                <% _.each(comments, function(item, index) { %>
+                <div class="comment<% if (index % 2 == 0) { %> even <% } else { %> odd <% } %>">
+                    <p><%- item.text %></p>
+                    <p class="text-right"><small>by <%- item.author.name %> - <%- item.author.email %><br />on <%- item.created_on_readable %></small></p>
                 <% }); %>
                 </div>
             <% }else{ %>
