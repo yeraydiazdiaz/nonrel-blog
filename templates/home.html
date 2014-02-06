@@ -1,15 +1,30 @@
-{% extends "base.html" %}
+{% extends "backbone_base.html" %}
 {% block title %}Latest posts{% endblock %}
 {% block content %}
+<noscript>
 <h1>Welcome{% if user.is_authenticated %} {{ user.username }}{% endif %}! Here are the latest posts:</h1>
 {% if posts %}
 <div id="post-list">
-	{% include "post_list.html" %}
+    {% include "post_list.html" %}
 </div>
-	{% if posts|length < total_posts %}
-		{% include "load_more_posts.html" with page="home" %}
-	{% endif %}
+    {% if posts|length < total_posts %}
+        {% include "load_more_posts.html" with page="home" %}
+    {% endif %}
 {% else %}
-	<h2>Sorry, no posts in database.</h2>
+    <h2>Sorry, no posts in database.</h2>
 {% endif %}
+</noscript>
+{% endblock %}
+{% block backbone_init %}
+{% autoescape off %}
+    <script type="text/javascript">
+        if (window.app) {
+            app.BlogCollection = new app.Blog();
+            new app.BlogView({collection: app.BlogCollection});
+            app.BlogCollection.next = '{{ next }}';
+            app.BlogCollection.count = {{ total_posts }};
+            app.BlogCollection.reset({{ models_json }});
+        }
+    </script>
+{% endautoescape %}
 {% endblock %}

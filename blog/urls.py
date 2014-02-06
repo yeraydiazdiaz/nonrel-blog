@@ -20,7 +20,8 @@ api_urlpatterns = patterns('blog.api_views',
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)
 
 urlpatterns = patterns(r'blog.views',
-    (r'^$', TemplateView.as_view(template_name='backbone_base.html')),
+    # (r'^$', TemplateView.as_view(template_name='backbone_base.html')),
+    (r'^$', 'home_view'),
     (r'^post/comment/(?P<post_id>.+)/(?P<permalink>.+)$', 'post_view'),
     (r'^post/(?P<post_id>.+)/(?P<permalink>.+)$', 'post_view'),
     (r'^post/(?P<permalink>.+)$', 'post_view'),

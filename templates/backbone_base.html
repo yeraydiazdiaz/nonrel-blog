@@ -48,7 +48,7 @@
         <!-- end main div -->
         <script id="postListTemplate" type="text/template">
             <h2><a href="#post/<%- id %>"><%- title %></a></h2>
-            <p><small><%= created_on %></small></p>
+            <p><small><strong><%= created_on_readable %></strong></small></p>
             <ul>
             <% _.each(tags.listItems, function(listItem) { %>
             <a href="/tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs">{{ tag }}</button></a>
@@ -59,7 +59,7 @@
         </script>
         <script id="postTemplate" type="text/template">
             <h1><%= title %></h1>
-            <p class="date">Posted on <%= created_on %></p>
+            <p class="date">Posted on <%= created_on_readable %></p>
             <% if (tags.length > 0) { %>
                 <ul>
                 <% _.each(tags.listItems, function(listItem) { %>
@@ -84,9 +84,9 @@
         <script id="loadMoreTemplate" type="text/template">
             <p class="text-center"><a id="load-more-posts" class="btn btn-primary">Load more posts...</a></p>
         </script>
-        <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.min.js"></script>
-        <script type="text/javascript" src="/static/js/lib/underscore-min.js"></script>
-        <script type="text/javascript" src="/static/js/lib/backbone-min.js"></script>
+        <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.js"></script>
+        <script type="text/javascript" src="/static/js/lib/underscore.js"></script>
+        <script type="text/javascript" src="/static/js/lib/backbone.js"></script>
         <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/static/js/routers/router.js"></script>
         <script type="text/javascript" src="/static/js/models/post.js"></script>
@@ -94,6 +94,6 @@
         <script type="text/javascript" src="/static/js/views/postList.js"></script>
         <script type="text/javascript" src="/static/js/views/post.js"></script>
         <script type="text/javascript" src="/static/js/views/blog.js"></script>
-        <script type="text/javascript" src="/static/js/app.js"></script>
+        {% block backbone_init %}{% endblock %}
     </body>
 </html>

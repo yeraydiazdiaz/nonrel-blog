@@ -29,6 +29,9 @@ app.PostListView = Backbone.View.extend({
         this.collection.each(function(item) {
             this.renderPostList(item);
         }, this);
+        if (this.collection.next !== null) {
+            this.$el.append($('#loadMoreTemplate').html());
+        }
         return this;
     },
 
@@ -45,7 +48,7 @@ app.PostListView = Backbone.View.extend({
             this.collection.next.lastIndexOf('=')+1,
             this.collection.next.length
         )
-        this.collection.fetch({data: {page: Number(lastDigit)}});
+        this.collection.fetch({remove: false, data: {page: Number(lastDigit)}});
     },
 
     checkForMorePosts: function() {

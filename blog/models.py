@@ -17,7 +17,7 @@ class Post(models.Model):
     updated_on = models.DateTimeField( null=True )
 
     def created_on_readable(self):
-        return self.created_on.ctime()
+        return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
 
     def create_permalink_from_title(self):
         """Create a permalink based on filtering words and whitespaces into underscores.
@@ -44,6 +44,9 @@ class Comment(models.Model):
     text = models.TextField()
     created_on = models.DateTimeField( default=timezone.now, null=True )
 
+    def created_on_readable(self):
+        return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
+
     def __unicode__(self):
         return '%s: %s' % (self.author.name, self.text[:50] )
     
@@ -53,4 +56,3 @@ class Author(models.Model):
     """
     name = models.CharField(max_length=255)
     email = models.EmailField()
-    

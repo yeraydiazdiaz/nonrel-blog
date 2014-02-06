@@ -4,21 +4,33 @@
 
 """
 
+from django.core.paginator import Paginator
+from django.conf import settings
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from blog.forms import *
 
-INITIAL_POSTS = 2
+INITIAL_POSTS = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
 
 def home_view(request):
     """Home view, retrieves the first few posts from the database.
 
     """
-    posts = Post.objects.all().order_by('-created_on')[:INITIAL_POSTS]
-    total_posts = Post.objects.all().count()
-    return render(request, 'home.html', { 'posts': posts, 'total_posts': total_posts })
+    import serializers
+    from rest_framework.renderers import JSONRenderer
+    posts = Post.objects.all().order_by('-created_on')
+    total_posts = posts.count()
+    paginator = Paginator(posts, INITIAL_POSTS)
+    paged_posts = paginator.page(1)
+    serializer = serializers.PostPaginationSerializer(paged_posts)
+    paginated_models_json = JSONRenderer().render(serializer.data['results'])
+    return render(request, 'home.html', {'posts': posts,
+                                         'total_posts': total_posts,
+                                         'models_json': paginated_models_json,
+                                         'next': serializer.data['next'],
+                                         })
 
 def post_view(request, post_id=None, permalink=None):
     """Post view, attempts to retrieve the post with the id, raising a 404 if not found. Also handles the creation of comments.
