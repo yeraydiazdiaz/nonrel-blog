@@ -38,7 +38,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'permalink', 'user_id', 'text', 'tags', 'comments', 'created_on_readable')
+        fields = ('id', 'title', 'permalink', 'user_id', 'text', 'tags', 'comments', 'created_on_readable')
 
 
 class PostPaginationSerializer(PaginationSerializer):

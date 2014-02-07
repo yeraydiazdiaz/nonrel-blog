@@ -4,9 +4,14 @@ app.PostView = Backbone.View.extend({
     tagName: 'div',
     className: 'post-list',
     template: _.template($('#postTemplate').html()),
+    formErrorTemplate: _.template($('#formErrorTemplate').html()),
 
     events: {
         'click #comment-submit': 'submitComment'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'sync', this.render)
     },
 
     render: function() {
@@ -14,29 +19,63 @@ app.PostView = Backbone.View.extend({
         return this;
     },
 
-    submitComment: function() {
-        var author = {
-            'name': $('#comment-section input').get(0).value,
-            'email': $('#comment-section input').get(1).value
+    validateField: function(field) {
+        var value = field.val();
+        if (value != '') {
+            if (field[0].name != 'email' || (field[0].name == 'email' && this.validateEmail(value))) {
+                return value;
+            }else{
+                field.after(this.formErrorTemplate({error_msg: 'Please enter a valid email address.'}));
+                return false;
+            }
+        } else {
+            field.after(this.formErrorTemplate({error_msg: 'This field is required'}));
+            return false;
         }
-        var text = $('#comment-section input').get(2).value
-        alert(JSON.stringify({ author: author, text: text}))
-        $.ajax({
-            type: "POST",
-            url: '/api/posts/' + this.model.id + '/comments',
-            data: JSON.stringify({ author: author, text: text}),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function(data){alert(data);},
-            failure: function(errMsg) {
-                alert(errMsg);
-            },
-            complete: this.onComplete
-        });
     },
 
-    onComplete: function(jqXHR, textStatus) {
-        alert(textStatus);
+    validateEmail: function (email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    },
+
+    parseCommentForm: function() {
+        var author = {
+            'name': this.validateField($('#comment-section input:eq(0)')),
+            'email': this.validateField($('#comment-section input:eq(1)'))
+        }
+        var text = this.validateField($('#comment-section textarea'));
+        if (author.name != false && author.email != false && text != false) {
+            return JSON.stringify({ author: author, text: text });
+        }else{
+            return false;
+        }
+    },
+
+    submitComment: function() {
+        $('.alert').remove();
+        data = this.parseCommentForm();
+        if (data != false) {
+            $.ajax({
+                type: "POST",
+                url: '/api/posts/' + this.model.id + '/comments',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                complete: this.onCommentAjaxComplete(this.model)
+            });
+        }
+    },
+
+    onCommentAjaxComplete: function(model) {
+        return function(jqXHR, textStatus) {
+            if (textStatus == 'error') {
+                alert(jqXHR.responseText);
+            } else {
+                alert('success, fetching')
+                model.fetch();
+            }
+        }
     }
 
 });
