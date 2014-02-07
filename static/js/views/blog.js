@@ -5,7 +5,6 @@ app.BlogView = Backbone.View.extend({
     el: '#main',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render);
         this.listenTo(app.blogRouter, 'route:home', this.home);
         this.listenTo(app.blogRouter, 'route:tag', this.tag);
         this.listenTo(app.blogRouter, 'route:viewPost', this.getModelFromCollectionOrFetch);
@@ -57,17 +56,26 @@ app.BlogView = Backbone.View.extend({
 
     home: function() {
         this.removeDetailViews();
+        if (this.collection.url != '/api/posts') {
+            this.postListView.remove();
+            this.collection.url = '/api/posts';
+            this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+        } else if (this.collection.models.length <= 1 && this.postListView == undefined) {
+            this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+        }
     },
 
     tag: function(param) {
         this.removeDetailViews();
-        this.tagged_collection = new app.BlogCollection([])
-        this.tagged_collection.url = '/api/posts/tag/' + param
-        this.tagged_collection.fetch({success: this.onCollectionFetchComplete, error: this.fetchError});
+        this.postListView.remove();
+        this.collection.url = '/api/posts/tag/' + param;
+        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
     },
 
-    onCollectionFetchComplete: function(e) {
-        app.blogView.render(app.blogView.tagged_collection);
+    onCollectionFetchComplete: function(view) {
+        return function() {
+            view.render(view.collection);
+        }
     },
 
     createPost: function() {

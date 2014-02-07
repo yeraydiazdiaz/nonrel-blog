@@ -24,6 +24,10 @@ class PostGenericList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     paginate_by = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
 
+    def pre_save(self, obj):
+        obj.user_id = self.request.user.id
+        obj.save()
+
 
 class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -34,10 +38,6 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-    def pre_save(self, obj):
-        post = Post.objects.get(pk=self.kwargs.get(self.lookup_field))
-        post.tags = self.kwargs.get('data')
-        post.save()
 
 class TagGenericList(generics.ListAPIView):
     """

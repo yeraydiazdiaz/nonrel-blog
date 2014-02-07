@@ -22,7 +22,10 @@ class CommentSerializer(serializers.ModelSerializer):
     Serializer for Comment model using a single nested relationship with Author.
     """
     author = AuthorSerializer()
-    created_on_readable = serializers.Field(source='created_on_readable')
+    created_on_readable = serializers.Field(source='created_on')
+
+    def transform_created_on_readable(self, obj, value):
+        return value.strftime('%A %d %b %Y - %H:%M:%S')
 
     class Meta:
         model = Comment
@@ -33,21 +36,32 @@ class PostSerializer(serializers.ModelSerializer):
     """
     Post serializer, adds nested comments and readable date from Datetime object from model declaration.
     """
+    user_id = serializers.Field(source='user_id')
+    user_name = serializers.Field(source='user_id')
+    permalink = serializers.Field(source='permalink')
     comments = CommentSerializer(many=True, required=False)
-    permalink = serializers.CharField(required=False)
     tags = serializers.CharField(required=False)
-    created_on_readable = serializers.Field(source='created_on_readable')
+    created_on_readable = serializers.Field(source='created_on')
+
+    def transform_user_name(self, obj, value):
+        from django.contrib.auth.models import User
+        return User.objects.get(pk=value).username
+
+    def transform_created_on_readable(self, obj, value):
+        return value.strftime('%A %d %b %Y - %H:%M:%S')
 
     def validate_tags(self, attrs, source):
         try:
             attrs[source] = attrs[source].split()
         except AttributeError:
             attrs[source] = []
+        except KeyError:
+            attrs['tags'] = []
         return attrs
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'permalink', 'user_id', 'text', 'tags', 'comments', 'created_on_readable')
+        fields = ('id', 'title', 'permalink', 'user_name', 'user_id', 'text', 'tags', 'comments', 'created_on_readable')
 
 
 class PostPaginationSerializer(PaginationSerializer):

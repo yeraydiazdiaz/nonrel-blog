@@ -70,7 +70,10 @@ app.CreatePostView = Backbone.View.extend({
                 data: data,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                complete: this.onCommentAjaxComplete(this.model)
+                complete: this.onCommentAjaxComplete(this.model),
+                xhrFields: {
+                  withCredentials: true
+                }
             });
         }
     },
@@ -81,7 +84,7 @@ app.CreatePostView = Backbone.View.extend({
                 alert(jqXHR.responseText);
             } else {
                 var response = JSON.parse(jqXHR.responseText);
-                app.blogRouter.navigate('post/'+response.id, {trigger: true} );
+                app.blogRouter.navigate('', {trigger: true} );
             }
         }
     },

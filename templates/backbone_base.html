@@ -49,25 +49,28 @@
         <!-- end main div -->
         <script id="postListTemplate" type="text/template">
             <h2><a href="#post/<%- id %>"><%- title %></a></h2>
-            <p><small><strong><%= created_on_readable %></strong></small>
             <% if (tags != null && tags.length > 0) { %>
+                <div class="tags">
                 <% _.each(tags, function(tag) { %>
                 <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%- tag %></button></a>
                 <% }); %>
+                </div>
             <% } %></p>
+            <p>by <strong><%= user_name %></strong> on <small><strong><%= created_on_readable %></strong></small>
             <p><% print(text.substring(0,250)); %>...</p>
             <p class="right-italic"><% if(comments != null) {print(comments.length);}else{print(0);} %> comments</p>
         </script>
         <script id="postTemplate" type="text/template">
             <h1><%= title %></h1>
-            <p class="date">Posted on <%= created_on_readable %>
             <% if (tags != null && tags.length > 0) { %>
+                <div class="tags">
                 <% _.each(tags, function(tag) { %>
                 <a href="#tag/<%= tag %>"><button type="button" class="btn btn-default btn-xs"><%= tag %></button></a>
                 <% }); %>
+                </div>
             <% } %>
-            </p>
-            <p><%- text %></p>
+            <p class="date">Posted by <%= user_name %> on <%= created_on_readable %></p>
+            <p><%= text %></p>
             <% try { if(skipCommentsForm) { %> <hr/> <% } } catch(e) { %>
             <div id="comment-section">
             <% if (comments != null && comments.length > 0) { %>

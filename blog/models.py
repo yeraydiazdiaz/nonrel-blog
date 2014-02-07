@@ -9,15 +9,12 @@ class Post(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     permalink = models.CharField(max_length=255, blank=True, null=True)
-    user_id = models.IntegerField(blank=True, null=True)
+    user_id = models.IntegerField()
     text = models.TextField()
     tags = ListField(blank=True, null=True)
     comments = ListField(EmbeddedModelField('Comment'), blank=True, null=True)
     created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
     updated_on = models.DateTimeField(blank=True, null=True)
-
-    def created_on_readable(self):
-        return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
 
     def create_permalink_from_title(self):
         """Create a permalink based on filtering words and whitespaces into underscores.
@@ -43,9 +40,6 @@ class Comment(models.Model):
     author = EmbeddedModelField( 'Author' )
     text = models.TextField()
     created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
-
-    def created_on_readable(self):
-        return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
 
     def __unicode__(self):
         return '%s: %s' % (self.author.name, self.text[:50] )
