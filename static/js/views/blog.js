@@ -6,9 +6,10 @@ app.BlogView = Backbone.View.extend({
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render);
-        this.listenTo(app.blogRouter, 'route:viewPost', this.getFromCollectionOrFetch);
-        this.listenTo(app.blogRouter, 'route:home', this.backToHome);
+        this.listenTo(app.blogRouter, 'route:home', this.home);
         this.listenTo(app.blogRouter, 'route:tag', this.tag);
+        this.listenTo(app.blogRouter, 'route:viewPost', this.getModelFromCollectionOrFetch);
+        this.listenTo(app.blogRouter, 'route:createPost', this.createPost);
     },
 
     render: function(collection) {
@@ -26,13 +27,16 @@ app.BlogView = Backbone.View.extend({
         this.$el.append(this.postView.render().el);
     },
 
-    backToHome: function() {
+    removeDetailViews: function() {
         if (this.postView) {
             this.postView.remove();
         }
+        if (this.createPostView) {
+            this.createPostView.remove();
+        }
     },
 
-    getFromCollectionOrFetch: function(id) {
+    getModelFromCollectionOrFetch: function(id) {
         this.post = this.collection.get(id);
         if (this.post == undefined) {
             this.post = new app.Post({collection: this.collection, id: id});
@@ -51,10 +55,12 @@ app.BlogView = Backbone.View.extend({
         alert('Fetch error');
     },
 
+    home: function() {
+        this.removeDetailViews();
+    },
+
     tag: function(param) {
-        if (this.postListView) {
-            this.postListView.remove();
-        }
+        this.removeDetailViews();
         this.tagged_collection = new app.BlogCollection([])
         this.tagged_collection.url = '/api/posts/tag/' + param
         this.tagged_collection.fetch({success: this.onCollectionFetchComplete, error: this.fetchError});
@@ -62,6 +68,12 @@ app.BlogView = Backbone.View.extend({
 
     onCollectionFetchComplete: function(e) {
         app.blogView.render(app.blogView.tagged_collection);
+    },
+
+    createPost: function() {
+        this.removeDetailViews();
+        this.createPostView = new app.CreatePostView();
+        this.$el.append(this.createPostView.render().el);
     }
 
 });

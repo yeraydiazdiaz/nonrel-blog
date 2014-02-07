@@ -72,7 +72,6 @@ app.PostView = Backbone.View.extend({
             if (textStatus == 'error') {
                 alert(jqXHR.responseText);
             } else {
-                alert('success, fetching')
                 model.fetch();
             }
         }

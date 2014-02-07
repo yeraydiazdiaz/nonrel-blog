@@ -19,6 +19,10 @@
 {% autoescape off %}
     <script type="text/javascript">
         $(function() {
+            if ($('#create-new-post')[0] != undefined) {
+                $('#create-new-post')[0].pathname = ''
+                $('#create-new-post')[0].hash = 'create_post'
+            }
             app.blogCollection = new app.BlogCollection();
             app.blogRouter = new Workspace();
             app.blogView = new app.BlogView({collection: app.blogCollection});

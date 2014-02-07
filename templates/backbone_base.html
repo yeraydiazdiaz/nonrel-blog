@@ -28,7 +28,7 @@
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="/create_post">Create new post</a></li>
+                      <li><a href="/create_post" id="create-new-post">Create new post</a></li>
                       <li><a href="/logout">Logout</a></li>
                     </ul>
                   {% endif %}
@@ -56,20 +56,21 @@
                 <% }); %>
             <% } %></p>
             <p><% print(text.substring(0,250)); %>...</p>
-            <p class="right-italic"><% print(comments.length); %> comments</p>
+            <p class="right-italic"><% if(comments != null) {print(comments.length);}else{print(0);} %> comments</p>
         </script>
         <script id="postTemplate" type="text/template">
             <h1><%= title %></h1>
             <p class="date">Posted on <%= created_on_readable %>
             <% if (tags != null && tags.length > 0) { %>
                 <% _.each(tags, function(tag) { %>
-                <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%- tag %></button></a>
+                <a href="#tag/<%= tag %>"><button type="button" class="btn btn-default btn-xs"><%= tag %></button></a>
                 <% }); %>
             <% } %>
             </p>
             <p><%- text %></p>
+            <% try { if(skipCommentsForm) { %> <hr/> <% } } catch(e) { %>
             <div id="comment-section">
-            <% if (comments.length > 0) { %>
+            <% if (comments != null && comments.length > 0) { %>
                 <% _.each(comments, function(item, index) { %>
                 <div class="comment<% if (index % 2 == 0) { %> even <% } else { %> odd <% } %>">
                     <p><%- item.text %></p>
@@ -94,6 +95,7 @@
                     <textarea id="id_text" class="form-control input-sm" cols="80" placeholder="Your comment ..." name="text" rows="10"></textarea>
                 </div>
                 <p><input type="submit" value="Submit comment" class="btn btn-primary" id="comment-submit" /></p>
+            <% } %>
             </div>
         </script>
         <script id="loadMoreTemplate" type="text/template">
@@ -108,26 +110,25 @@
             </div>
         </script>
         <script id="postFormTemplate" type="text/template">
+            <h1>Create new post:</h1>
             <div id="post-preview"></div>
-                <form method="post" action="/create_post">
-                    <div class="fieldWrapper form-group">
-                        <label for="post-title">Title</label>
-                        <input id="post-title" class="form-control input-sm" type="text" name="title" maxlength="255" placeholder="Title for your post"></input>
-                    </div>
-                    <div class="fieldWrapper form-group">
-                        <label for="post-text">Text</label>
-                        <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"></textarea>
-                    </div>
-                    <div class="fieldWrapper form-group">
-                        <label for="post-tags">Tags</label>
-                        <input id="post-tags" class="form-control input-sm" type="text" name="tags" maxlength="255" placeholder="tag1 tag2 tag3"></input>
-                        <span class="help-block"></span>
-                    </div>
-                    <p>
-                        <input id="preview" class="btn btn-primary" value="Preview"></input>
-                        <input id="submit" class="btn btn-primary" type="submit" value="Create post"></input>
-                    </p>
-                </form>
+            <div class="fieldWrapper form-group">
+                <label for="post-title">Title</label>
+                <input id="post-title" class="form-control input-sm" type="text" name="title" maxlength="255" placeholder="Title for your post"></input>
+            </div>
+            <div class="fieldWrapper form-group">
+                <label for="post-text">Text</label>
+                <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"></textarea>
+            </div>
+            <div class="fieldWrapper form-group">
+                <label for="post-tags">Tags</label>
+                <input id="post-tags" class="form-control input-sm" type="text" name="tags" maxlength="255" placeholder="tag1 tag2 tag3"></input>
+                <span class="help-block"></span>
+            </div>
+            <p>
+                <input class="btn btn-primary" value="Preview" id="preview-post"></input>
+                <input class="btn btn-primary" type="submit" value="Create post" id="submit-post"></input>
+            </p>
             </div>
         </script>
         <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.js"></script>
@@ -139,7 +140,9 @@
         <script type="text/javascript" src="/static/js/collections/blog.js"></script>
         <script type="text/javascript" src="/static/js/views/postList.js"></script>
         <script type="text/javascript" src="/static/js/views/post.js"></script>
+        <script type="text/javascript" src="/static/js/views/createPost.js"></script>
         <script type="text/javascript" src="/static/js/views/blog.js"></script>
+        <script type="text/javascript" src="/static/js/app.js"></script>
         {% block backbone_init %}{% endblock %}
     </body>
 </html>

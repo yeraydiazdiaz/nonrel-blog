@@ -39,7 +39,10 @@ class PostSerializer(serializers.ModelSerializer):
     created_on_readable = serializers.Field(source='created_on_readable')
 
     def validate_tags(self, attrs, source):
-        attrs[source] = attrs[source].split()
+        try:
+            attrs[source] = attrs[source].split()
+        except AttributeError:
+            attrs[source] = []
         return attrs
 
     class Meta:
