@@ -34,6 +34,10 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def pre_save(self, obj):
+        post = Post.objects.get(pk=self.kwargs.get(self.lookup_field))
+        post.tags = self.kwargs.get('data')
+        post.save()
 
 class TagGenericList(generics.ListAPIView):
     """
@@ -63,7 +67,10 @@ class CommentsGenericDetail(generics.CreateAPIView):
     def pre_save(self, obj):
         try:
             post = Post.objects.get(pk=self.kwargs.get(self.lookup_field))
-            post.comments.append(obj)
+            if post.comments is None:
+                post.comments = [obj]
+            elif post.comments == []:
+                post.comments.append(obj)
             post.save()
         except Post.DoesNotExist:
             from django.http import Http404
@@ -76,5 +83,5 @@ def api_root(request, format=None):
     Entry point to API
     """
     return Response({
-        'posts': reverse('posts-list', request=request, format=format),
+        'post': reverse('post-list', request=request, format=format),
     })

@@ -33,8 +33,14 @@ class PostSerializer(serializers.ModelSerializer):
     """
     Post serializer, adds nested comments and readable date from Datetime object from model declaration.
     """
-    comments = CommentSerializer(many=True)
+    comments = CommentSerializer(many=True, required=False)
+    permalink = serializers.CharField(required=False)
+    tags = serializers.CharField(required=False)
     created_on_readable = serializers.Field(source='created_on_readable')
+
+    def validate_tags(self, attrs, source):
+        attrs[source] = attrs[source].split()
+        return attrs
 
     class Meta:
         model = Post

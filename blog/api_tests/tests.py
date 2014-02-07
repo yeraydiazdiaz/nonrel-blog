@@ -4,8 +4,8 @@
 
 """
 
-import json
 from rest_framework.test import APITestCase
+import json
 from blog.models import *
 from blog.test_aux import *
 from rest_framework import status
@@ -135,8 +135,7 @@ class BlogAPITests(APITestCase):
             "author": {"name": "Test", "email": "t@test.com"},
             "text": "Test"
         }
-        response = c.post('/api/posts/1/comments', json.dumps(data), format='json')
-        print response.data
+        response = c.post('/api/posts/1/comments', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_comment_adds_a_comment_to_post(self):
@@ -150,8 +149,41 @@ class BlogAPITests(APITestCase):
             "author": {"name": "Test", "email": "t@test.com"},
             "text": "Test"
         }
-        response = c.post('/api/posts/%s/comments' % p.id, json.dumps(data), format='json')
-        print response.data
+        response = c.post('/api/posts/%s/comments' % p.id, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Expected HTTP 201.')
+        p = Post.objects.get()
+        self.assertEqual(len(p.comments), 1)
+
+    def test_POST_posts_is_restricted_to_authenticated_users(self):
+        """
+        Test posts/ID/comments endpoint with an empty database.
+        """
+        reset_db()
+        c = APIClient()
+        data = {
+            "author": {"name": "Test", "email": "t@test.com"},
+            "text": "Test"
+        }
+        response = c.post('/api/posts', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Expected HTTP 403.')
+
+    def test_POST_posts_creates_post(self):
+        """
+        Test posts/ID/comments endpoint with an empty database.
+        """
+        reset_db()
+        u = create_user()
+        c = APIClient()
+        c.login(username=u.username, password='foobar')
+        data = {
+            "title": "Test post title",
+            "text": "Test post text",
+            "tags": "tag1 tag2",
+        }
+        response = c.post('/api/posts', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Expected HTTP 201.')
+        self.assertEqual(Post.objects.count(), 1, 'Expected one post after creation.')
+        p = Post.objects.get()
+        self.assertEqual(len(p.tags), 2, 'Expected two tags.')
 
 

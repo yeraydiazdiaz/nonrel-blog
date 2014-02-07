@@ -184,7 +184,6 @@ class BlogTests(TestCase):
         reset_db()
         u = create_user()
         c = Client()
-        #response = c.post(reverse('blog.views.login_view'), { 'username': u.username, 'password':'foobar' })
         response = c.post( '/login', { 'username': u.username, 'password':'foobar' })
         self.assertNotEqual(response.status_code, 404, 'HTTP error.')
         u = User.objects.get( username=u.username )

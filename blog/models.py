@@ -8,13 +8,13 @@ class Post(models.Model):
     """
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
-    permalink = models.CharField(max_length=255)
-    user_id = models.IntegerField(null=True)
+    permalink = models.CharField(max_length=255, blank=True, null=True)
+    user_id = models.IntegerField(blank=True, null=True)
     text = models.TextField()
-    tags = ListField()
-    comments = ListField( EmbeddedModelField( 'Comment' ) )
-    created_on = models.DateTimeField( default=timezone.now, null=True )
-    updated_on = models.DateTimeField( null=True )
+    tags = ListField(blank=True, null=True)
+    comments = ListField(EmbeddedModelField('Comment'), blank=True, null=True)
+    created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    updated_on = models.DateTimeField(blank=True, null=True)
 
     def created_on_readable(self):
         return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
@@ -42,7 +42,7 @@ class Comment(models.Model):
     """
     author = EmbeddedModelField( 'Author' )
     text = models.TextField()
-    created_on = models.DateTimeField( default=timezone.now, null=True )
+    created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
 
     def created_on_readable(self):
         return self.created_on.strftime('%A %d %b %Y - %H:%M:%S')
