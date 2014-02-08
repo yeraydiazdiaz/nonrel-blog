@@ -53,6 +53,7 @@ class TagGenericList(generics.ListAPIView):
         tag = self.kwargs.get(self.lookup_url_kwarg)
         return Post.objects.filter(tags__in=[tag])
 
+
 class CommentsGenericDetail(generics.CreateAPIView):
     """
     API view for creating comments on a post, responds to /api/posts/ID/comments.

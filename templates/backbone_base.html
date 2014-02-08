@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="csrf-token" content="{{csrf_token}}">
+        <meta name="user_id" content="{{user.id}}">
         <title>{% block title %}{% endblock %} NonRel Blog</title>
         <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="/static/nonrel-blog.css" />
@@ -52,7 +52,7 @@
             <% if (tags != null && tags.length > 0) { %>
                 <div class="tags">
                 <% _.each(tags, function(tag) { %>
-                <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%- tag %></button></a>
+                <a href="#tag/<%- tag %>"><button type="button" class="btn btn-default btn-xs"><%= tag %></button></a>
                 <% }); %>
                 </div>
             <% } %></p>
@@ -62,7 +62,18 @@
         </script>
         <script id="postTemplate" type="text/template">
             <h1><%= title %></h1>
-            <% if (tags != null && tags.length > 0) { %>
+            <% try {
+                 if (skipEditButtons) {}
+               } catch(e) {
+                    if ( user_id == $('meta[name="user_id"]').attr('content')) { %>
+                        <div class="pull-right">
+                            <a href="#post/<%= id %>/edit" class="btn btn-primary btn-xs">Edit post</a>
+                            <a id="delete-post" class="btn btn-primary btn-xs">Delete post</a>
+                        </div>
+               <%
+                  }
+               }
+               if (tags != null && tags.length > 0) { %>
                 <div class="tags">
                 <% _.each(tags, function(tag) { %>
                 <a href="#tag/<%= tag %>"><button type="button" class="btn btn-default btn-xs"><%= tag %></button></a>
@@ -113,24 +124,24 @@
             </div>
         </script>
         <script id="postFormTemplate" type="text/template">
-            <h1>Create new post:</h1>
+            <h1><%= mode %> post:</h1>
             <div id="post-preview"></div>
             <div class="fieldWrapper form-group">
                 <label for="post-title">Title</label>
-                <input id="post-title" class="form-control input-sm" type="text" name="title" maxlength="255" placeholder="Title for your post"></input>
+                <input id="post-title" class="form-control input-sm" type="text" name="title" maxlength="255" placeholder="Title for your post" value="<%= title %>"></input>
             </div>
             <div class="fieldWrapper form-group">
                 <label for="post-text">Text</label>
-                <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"></textarea>
+                <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"><%= text %></textarea>
             </div>
             <div class="fieldWrapper form-group">
                 <label for="post-tags">Tags</label>
-                <input id="post-tags" class="form-control input-sm" type="text" name="tags" maxlength="255" placeholder="tag1 tag2 tag3"></input>
+                <input id="post-tags" class="form-control input-sm" type="text" name="tags" maxlength="255" placeholder="tag1 tag2 tag3" value="<% print(tags.join(' ')); %>"></input>
                 <span class="help-block"></span>
             </div>
             <p>
                 <input class="btn btn-primary" value="Preview" id="preview-post"></input>
-                <input class="btn btn-primary" type="submit" value="Create post" id="submit-post"></input>
+                <input class="btn btn-primary" type="submit" value="<%= mode %> post" id="submit-post"></input>
             </p>
             </div>
         </script>

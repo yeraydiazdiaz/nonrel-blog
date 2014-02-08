@@ -1,6 +1,6 @@
 var app = app || {};
 
-app.CreatePostView = Backbone.View.extend({
+app.CreateEditPostView = Backbone.View.extend({
     template: _.template($('#postFormTemplate').html()),
     formErrorTemplate: _.template($('#formErrorTemplate').html()),
     postTemplate: _.template($('#postTemplate').html()),
@@ -10,8 +10,18 @@ app.CreatePostView = Backbone.View.extend({
         'click #submit-post': 'submitPost'
     },
 
+    initialize: function(options) {
+        this.mode = options.mode;
+    },
+
     render: function() {
-        this.$el.html( this.template() )
+        if (this.model) {
+            var json = this.model.toJSON();
+            json.mode = this.mode;
+            this.$el.html( this.template(json) )
+        }else{
+            this.$el.html( this.template( {title: '', text: '', tags: [], mode: this.mode}) )
+        }
         return this;
     },
 
@@ -28,12 +38,14 @@ app.CreatePostView = Backbone.View.extend({
     parsePostForm: function() {
         var title = this.validateField($('#post-title'));
         var text = this.validateField($('#post-text'));
-        var tags = $('#post-tags').val();
+        var tags = $('#post-tags').val().trim();
         if (tags == '') {
-            tags = null;
+            tags = [];
+        }else{
+            tags = tags.split(' ');
         }
         if (title != false && text != false) {
-            return JSON.stringify({ title: title, text: text, tags: tags });
+            return { title: title, text: text, tags: tags };
         }else{
             return false;
         }
@@ -41,67 +53,45 @@ app.CreatePostView = Backbone.View.extend({
 
     previewPost: function() {
         $('.alert').remove();
-        data = this.parsePostForm();
+        var data = this.parsePostForm();
         if (data != false) {
-            data = JSON.parse(data);
-            if (data.tags != null) {
-                data.tags = data.tags.split(' ');
-            }
-            data.created_on_readable = '<strong>Just now</strong>';
-            data.comments = [];
+            // forms and admin buttons are not shown in previews
+            data.skipEditButtons = true;
             data.skipCommentsForm = true;
+            if (this.model) {
+                // we're previewing the edition of a post, pass as much data from it as possible
+                var jsonModel = this.model.toJSON();
+                data.created_on_readable = jsonModel.created_on_readable;
+                if (!data.hasOwnProperty('tags')) {
+                    data.tags = jsonModel.tags;
+                }
+                data.comments = jsonModel.comments;
+                data.user_id = jsonModel.user_id;
+                data.user_name = jsonModel.user_name;
+                data.id = jsonModel.id;
+            }else{
+                data.user_name = $('.dropdown-toggle').html().substring(0, $('.dropdown-toggle').html().indexOf('<')-1);
+                data.created_on_readable = 'just now';
+                data.comments = [];
+            }
             this.$('#post-preview').html( this.postTemplate(data) );
         }
     },
 
     submitPost: function() {
         $('.alert').remove();
-        data = this.parsePostForm();
-        if (data != false) {
-            var csrftoken = this.getCookie('csrftoken');
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    xhr.setRequestHeader('X-CSRFToken', csrftoken);
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                url: '/api/posts',
-                data: data,
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                complete: this.onCommentAjaxComplete(this.model),
-                xhrFields: {
-                  withCredentials: true
-                }
-            });
-        }
-    },
-
-    onCommentAjaxComplete: function(model) {
-        return function(jqXHR, textStatus) {
-            if (textStatus == 'error') {
-                alert(jqXHR.responseText);
+        var data = this.parsePostForm();
+        if (data) {
+            if (this.model) {
+                this.model.save(data, {success: this.onSuccess});
             } else {
-                var response = JSON.parse(jqXHR.responseText);
-                app.blogRouter.navigate('', {trigger: true} );
+                this.collection.create(data, {wait: true, success: this.onSuccess});
             }
         }
     },
 
-    getCookie: function(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+    onSuccess: function(model, response, options) {
+        app.blogRouter.navigate('post/' + model.id, {trigger: true} );
     }
 
 });

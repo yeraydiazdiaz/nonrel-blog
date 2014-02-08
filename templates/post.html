@@ -4,35 +4,35 @@
 <h1>{{ post.title }}</h1>
 <p class="date">posted on <strong>{{ post.created_on }}</strong></p>
 {% if user.is_authenticated and user.pk == post.user_id %}
-	<div class="pull-right">
-	<a href="/edit_post/{{ post.id }}" class="btn btn-primary btn-xs">Edit post</a>
-	<a href="/delete_post/{{ post.id }}" class="btn btn-primary btn-xs">Delete post</a>
-	</div>
+    <div class="pull-right">
+    <a href="/edit_post/{{ post.id }}" class="btn btn-primary btn-xs">Edit post</a>
+    <a href="/delete_post/{{ post.id }}" class="btn btn-primary btn-xs">Delete post</a>
+    </div>
 {% endif %}
 {{ post.text|linebreaks }}
 {% include "tag_buttons.html" %}
 <div id="comment-section">
 {% if post.comments %}
-	<h3>Comments</h3>
-	{% for comment in post.comments %}
-	{% if forloop.counter != vts|length %}
-	<div class="comment {{forloop.counter0|divisibleby:2|yesno:"even,odd"}}">
-	{% endif %}
-	<p><small>{{ comment.text }}</small></p>
-	<p class="text-right"><small>by {{ comment.author.name }} - {{ comment.author.email }}</small></p>
-	</div>
-	{% endfor %}
+    <h3>Comments</h3>
+    {% for comment in post.comments %}
+    {% if forloop.counter != vts|length %}
+    <div class="comment {{forloop.counter0|divisibleby:2|yesno:"even,odd"}}">
+    {% endif %}
+    <p><small>{{ comment.text }}</small></p>
+    <p class="text-right"><small>by {{ comment.author.name }} - {{ comment.author.email }}</small></p>
+    </div>
+    {% endfor %}
 {% else %}
-	<h3>No comments</h3>
+    <h3>No comments</h3>
 {% endif %}
 {% if forms %}
-	<hr/>
-	<p>Add a comment:</p>
-	<form action="/post/comment/{{ post.id }}/{{ post.permalink }}" method="post">{% csrf_token %}
-	{% for form in forms %}
-		{% include "generic_form.html" %}
-	{% endfor %}
-	<p><input type="submit" value="Submit comment" class="btn btn-primary" /></p>
+    <hr/>
+    <p>Add a comment:</p>
+    <form action="/post/comment/{{ post.id }}/{{ post.permalink }}" method="post">{% csrf_token %}
+    {% for form in forms %}
+        {% include "generic_form.html" %}
+    {% endfor %}
+    <p><input type="submit" value="Submit comment" class="btn btn-primary" /></p>
 {% endif %}
 </div>
 {% endblock %}

@@ -16,20 +16,32 @@
 {% autoescape off %}
     <script type="text/javascript">
         $(function() {
+            var _sync = Backbone.sync;
+            Backbone.sync = function(method, model, options){
+                options.beforeSend = function(xhr){
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                };
+                return _sync(method, model, options);
+            };
+
+            // in order to preserve no JS functionality we change the the create new post link on load to a hash.
             if ($('#create-new-post')[0] != undefined) {
                 $('#create-new-post')[0].pathname = ''
                 $('#create-new-post')[0].hash = 'create_post'
             }
+            // start up the components
             app.blogCollection = new app.BlogCollection();
             app.blogRouter = new Workspace();
             app.blogView = new app.BlogView({collection: app.blogCollection});
             Backbone.history.start();
+            // bootstrap initial models from Django if loading the home page.
             if (window.app && window.location.hash === '') {
                 app.blogCollection.next = '{{ next }}';
                 app.blogCollection.count = {{ total_posts }};
                 app.blogCollection.reset({{ models_json }});
             }else{
-                var route = window.location.hash.substring(1,window.location.hash.length);
+                // retrieve the route and navigate otherwise
+                var route = window.location.hash.substring(1);
                 app.blogRouter.navigate(route, {trigger: true, replace: true});
             }
         });

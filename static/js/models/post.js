@@ -3,12 +3,14 @@ var app = app || {};
 
 app.Post = Backbone.Model.extend({
     defaults: {
-        title: 'No title',
-        text: 'No text',
-        author: 'Unknown',
-        created_on: 'Unknown',
+        id: null,
+        title: '',
+        text: '',
         tags: [],
-        comments: []
+        comments: [],
+        user_name: '',
+        user_id: null,
+        created_on_readable: null
     }
 
 });

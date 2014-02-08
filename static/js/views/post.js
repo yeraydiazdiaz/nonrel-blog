@@ -7,11 +7,11 @@ app.PostView = Backbone.View.extend({
     formErrorTemplate: _.template($('#formErrorTemplate').html()),
 
     events: {
-        'click #comment-submit': 'submitComment'
+        'click #comment-submit': 'submitComment',
+        'click #delete-post': 'deletePost'
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'sync', this.render)
     },
 
     render: function() {
@@ -75,6 +75,10 @@ app.PostView = Backbone.View.extend({
                 model.fetch();
             }
         }
+    },
+
+    deletePost: function() {
+        // TODO: implement deletePost via ajax call to DELETE
     }
 
 });
