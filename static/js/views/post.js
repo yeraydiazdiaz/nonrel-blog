@@ -5,10 +5,11 @@ app.PostView = Backbone.View.extend({
     className: 'post-list',
     template: _.template($('#postTemplate').html()),
     formErrorTemplate: _.template($('#formErrorTemplate').html()),
+    confirmDeletionTemplate: _.template($('#confirmDeletionTemplate').html()),
 
     events: {
         'click #comment-submit': 'submitComment',
-        'click #delete-post': 'deletePost'
+        'click #delete-post': 'confirmDelete'
     },
 
     initialize: function() {
@@ -75,6 +76,20 @@ app.PostView = Backbone.View.extend({
                 model.fetch();
             }
         }
+    },
+
+    confirmDelete: function() {
+        this.$el.before(this.confirmDeletionTemplate());
+        $(".alert").alert()
+        $('#delete-no').click( function() {
+            $(".alert").alert('close');
+        });
+        $('#delete-yes').click( function(view) {
+            return function() {
+                $(".alert").alert('close');
+                view.deletePost();
+            }
+        }(this));
     },
 
     deletePost: function() {

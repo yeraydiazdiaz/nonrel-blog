@@ -123,6 +123,15 @@
                 </ul>
             </div>
         </script>
+        <script id="confirmDeletionTemplate" type="text/template">
+            <div class="alert alert-danger fade in">
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"> × </button>
+                <h3>Are you sure you want to delete this post?
+                <button class="btn btn-danger" type="button" id="delete-yes">Yes</button>
+                <button class="btn" type="button" id="delete-no">No</button>
+                </h3>
+            </div>
+        </script>
         <script id="postFormTemplate" type="text/template">
             <h1><%= mode %> post:</h1>
             <div id="post-preview"></div>

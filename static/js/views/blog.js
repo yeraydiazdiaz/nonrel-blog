@@ -76,7 +76,9 @@ app.BlogView = Backbone.View.extend({
         if (this.collection.url != '/api/posts') {
             this.postListView.remove();
             this.collection.url = '/api/posts';
-            this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError, reset: true});
+            this.collection.fetch({error: this.fetchError, reset: true});
+        } else if (this.postListView == undefined) {
+            this.collection.fetch({error: this.fetchError, reset: true});
         }
     },
 
@@ -87,12 +89,6 @@ app.BlogView = Backbone.View.extend({
         }
         this.collection.url = '/api/posts/tag/' + param;
         this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
-    },
-
-    onCollectionFetchComplete: function(view) {
-        return function() {
-            view.render(view.collection);
-        }
     },
 
     createPost: function() {
