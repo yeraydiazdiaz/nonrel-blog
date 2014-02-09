@@ -42,7 +42,7 @@ class Comment(models.Model):
     created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
 
     def __unicode__(self):
-        return '%s: %s' % (self.author.name, self.text[:50] )
+        return u'%s: %s' % (self.author.name, self.text[:50] )
     
 class Author(models.Model):
     """
@@ -59,6 +59,7 @@ class SiteActivity(models.Model):
     user_id = models.IntegerField(blank=True, null=True)
     post_id = models.IntegerField(blank=True, null=True)
     post_title = models.CharField(max_length=255, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     TASK_CHOICES = (
         ('Created', 'Created a post'),
@@ -68,6 +69,9 @@ class SiteActivity(models.Model):
     )
     
     task = models.CharField(max_length=30, choices=TASK_CHOICES, default='Updated')
+
+    def __unicode__(self):
+        return u'%s activity on post: %s' % (self.task, self.post_title)
     
 """
     Signals:
@@ -81,7 +85,11 @@ from django.dispatch import receiver
 import django.dispatch
 
 comment_signal = django.dispatch.Signal(providing_args=['post_id', 'post_title'])
+api_create_signal = django.dispatch.Signal(providing_args=['post_id', 'post_title'])
+api_update_signal = django.dispatch.Signal(providing_args=['post_id', 'post_title'])
+api_delete_signal = django.dispatch.Signal(providing_args=['post_id', 'post_title'])
 
+"""
 @receiver(post_save, sender=Post)
 def save_post_handler(sender, **kwargs):
     instance = kwargs.get('instance')
@@ -95,9 +103,28 @@ def save_post_handler(sender, **kwargs):
 def delete_post_handler(sender, **kwargs):
     instance = kwargs.get('instance')
     SiteActivity.objects.create(post_id=instance.id, post_title=instance.title, task='Deleted')
+"""
 
 @receiver(comment_signal)
 def comment_handler(sender, **kwargs):
     post_id = kwargs.get('post_id')
     post_title = kwargs.get('post_title')
     SiteActivity.objects.create(post_id=post_id, post_title=post_title, task='Comment')
+
+@receiver(api_update_signal)
+def api_update_handler(sender, **kwargs):
+    post_id = kwargs.get('post_id')
+    post_title = kwargs.get('post_title')
+    SiteActivity.objects.create(post_id=post_id, post_title=post_title, task='Updated')
+
+@receiver(api_create_signal)
+def api_create_handler(sender, **kwargs):
+    post_id = kwargs.get('post_id')
+    post_title = kwargs.get('post_title')
+    SiteActivity.objects.create(post_id=post_id, post_title=post_title, task='Created')
+
+@receiver(api_delete_signal)
+def api_delete_handler(sender, **kwargs):
+    post_id = kwargs.get('post_id')
+    post_title = kwargs.get('post_title')
+    SiteActivity.objects.create(post_id=post_id, post_title=post_title, task='Deleted')

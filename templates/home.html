@@ -33,6 +33,8 @@
             app.blogCollection = new app.BlogCollection();
             app.blogRouter = new Workspace();
             app.blogView = new app.BlogView({collection: app.blogCollection});
+            app.siteActivitiesCollection = new app.SiteActivitiesCollection();
+            app.siteActivitiesView = new app.SiteActivitiesView({collection: app.siteActivitiesCollection});
             Backbone.history.start();
             // bootstrap initial models from Django if loading the home page.
             if (window.app && window.location.hash === '') {

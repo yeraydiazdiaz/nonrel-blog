@@ -28,6 +28,11 @@ class PostGenericList(generics.ListCreateAPIView):
         obj.user_id = self.request.user.id
         obj.save()
 
+    def post_save(self, obj, created=False):
+        if created:
+            from blog.models import api_create_signal
+            api_create_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
+
 
 class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -37,6 +42,14 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all().order_by('-created_on')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def post_save(self, obj, created=False):
+        from blog.models import api_update_signal
+        api_update_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
+
+    def post_delete(self, obj):
+        from blog.models import api_delete_signal
+        api_delete_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
 
 
 class TagGenericList(generics.ListAPIView):
@@ -117,6 +130,16 @@ class CommentsGenericDetail(generics.CreateAPIView):
             raise Http404
 
 
+class SiteActivityGenericList(generics.ListAPIView):
+    """
+    API view for SiteActivities, responds to /api/siteactivities.
+    By default we sort by inverse creation date and we paginate.
+    """
+    serializer_class = SiteActivitySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = SiteActivity.objects.all().order_by('-created_on')
+
+
 @api_view(('GET',))
 def api_root(request, format=None):
     """
@@ -124,4 +147,5 @@ def api_root(request, format=None):
     """
     return Response({
         'post': reverse('post-list', request=request, format=format),
+        'site-activities': reverse('site-activities', request=request, format=format),
     })

@@ -88,3 +88,20 @@ class PostPaginationSerializer(PaginationSerializer):
 
     class Meta:
         object_serializer_class = PostSerializer
+
+class SiteActivitySerializer(serializers.ModelSerializer):
+    """
+    Serializer for SiteActivityModel model.
+    """
+    timestamp = serializers.Field(source='created_on')
+    created_on_readable = serializers.Field(source='created_on')
+
+    def transform_created_on_readable(self, obj, value):
+        return value.strftime('%A %d %b %Y - %H:%M:%S')
+
+    def transform_timestamp(self, obj, value):
+        import calendar
+        return int(calendar.timegm(value.utctimetuple()))
+
+    class Meta:
+        model = SiteActivity

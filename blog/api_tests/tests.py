@@ -309,3 +309,27 @@ class BlogAPITests(APITestCase):
         for i in xrange(expected_results):
             self.assertEquals(content['results'][i]['user_id'], joe.id,
                           'Expected user ids to match, got %s and expected %s' % (content['results'][i]['user_id'], joe.id))
+
+    def test_site_activities_endpoint_returns_no_results_on_empty_db(self):
+        """
+        Test site activities endpoint with empty db.
+        """
+        reset_db()
+        c = APIClient()
+        response = c.get('/api/siteactivities')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content), 0, 'Expected no results')
+
+    def test_site_activities_endpoint_returns_results_on_activities(self):
+        """
+        Test site activities endpoint with empty db.
+        """
+        reset_db()
+        c = APIClient()
+        p = create_post()
+        expected = 1
+        response = c.get('/api/siteactivities')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content), expected, 'Expected %s results, got %s' % (expected, len(content)))

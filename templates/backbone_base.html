@@ -47,6 +47,7 @@
           </div>
         </div>
         </header>
+        <div id="site-activity"></div>
         <div id="main" class="starter-template">
         {% block content %}{% endblock %}
         </div>
@@ -158,6 +159,12 @@
             </p>
             </div>
         </script>
+        <script id="activityTemplate" type="text/template">
+            <div id="<%= id %>" class="activity alert alert-dismissable <% if (task=='Deleted') { print('alert-danger'); } else if (task=='Updated') { print('alert-info'); } else { print('alert-success'); } %>">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <%= task %> post <a href="#post/<%= post_id %>" class="alert-link"><%= post_title %></a>
+            </div>
+        </script>
         <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.js"></script>
         <script type="text/javascript" src="/static/js/lib/underscore.js"></script>
         <script type="text/javascript" src="/static/js/lib/backbone.js"></script>
@@ -165,10 +172,13 @@
         <script type="text/javascript" src="/static/js/routers/router.js"></script>
         <script type="text/javascript" src="/static/js/models/post.js"></script>
         <script type="text/javascript" src="/static/js/collections/blog.js"></script>
+        <script type="text/javascript" src="/static/js/models/siteactivity.js"></script>
+        <script type="text/javascript" src="/static/js/collections/siteactivities.js"></script>
         <script type="text/javascript" src="/static/js/views/postList.js"></script>
         <script type="text/javascript" src="/static/js/views/post.js"></script>
         <script type="text/javascript" src="/static/js/views/createPost.js"></script>
         <script type="text/javascript" src="/static/js/views/blog.js"></script>
+        <script type="text/javascript" src="/static/js/views/siteActivity.js"></script>
         <script type="text/javascript" src="/static/js/app.js"></script>
         {% block backbone_init %}{% endblock %}
     </body>
