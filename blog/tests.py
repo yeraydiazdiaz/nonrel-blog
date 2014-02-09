@@ -31,7 +31,7 @@ class BlogTests(TestCase):
 
     def test_home_view_with_no_posts(self):
         """Test home view in case there are no posts in the database.
-        
+
         """
         reset_db()
         c = Client()
@@ -41,7 +41,7 @@ class BlogTests(TestCase):
 
     def test_home_view_with_one_post(self):
         """Test home view in case there is only one post in the database.
-        
+
         """
         reset_db()
         p = create_post_with_comments()
@@ -49,10 +49,10 @@ class BlogTests(TestCase):
         response = c.get(reverse('blog.views.home_view') )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         self.assertEqual(len(response.context['posts']), 1, 'Expected only one post.')
-        
+
     def test_home_view_with_limited_post(self):
         """Test home view in case there several posts in the database.
-        
+
         """
         from blog.views import INITIAL_POSTS
         reset_db()
@@ -61,11 +61,11 @@ class BlogTests(TestCase):
         c = Client()
         response = c.get(reverse('blog.views.home_view') )
         self.assertEqual(response.status_code, 200, 'HTTP error.')
-        self.assertEqual(len(response.context['posts']), INITIAL_POSTS, 'Unexpected number of posts.')   
-    
+        self.assertEqual(len(response.context['posts']), INITIAL_POSTS, 'Unexpected number of posts.')
+
     def test_single_post_view(self):
         """Test post view with a sample post.
-        
+
         """
         reset_db()
         p = create_post_with_comments()
@@ -76,16 +76,16 @@ class BlogTests(TestCase):
 
     def test_post_view_non_existent_permalink(self):
         """Test post view with a non existent permalink.
-        
+
         """
         reset_db()
         c = Client()
         response = c.get(reverse('blog.views.post_view', args=['foobar'] ) )
-        self.assertEqual(response.status_code, 404, 'Expected 404.')    
+        self.assertEqual(response.status_code, 404, 'Expected 404.')
 
     def test_post_view_with_permalink(self):
         """Test post view with a non existent permalink.
-        
+
         """
         reset_db()
         p = create_post_with_comments()
@@ -93,10 +93,10 @@ class BlogTests(TestCase):
         response = c.get(reverse('blog.views.post_view', args=[p.permalink] ) )
         self.assertEqual(response.status_code, 200, 'Expected 200.')
         self.assertEqual(response.context['post'].id, p.id, 'Mismatch on post ids.')
-        
+
     def test_invalid_form_submit_produces_errors(self):
         """Test showing errors on invalid comment form submission.
-        
+
         """
         reset_db()
         p = create_post_with_comments()
@@ -105,10 +105,10 @@ class BlogTests(TestCase):
         self.assertEqual(response.status_code, 200, 'HTTP error.')
         for f in response.context['forms']:
             self.assertIsNotNone(f.errors, 'Expected error, got None on form %s.' % f)
-        
+
     def test_valid_form_submit_creates_new_comment(self):
         """Test showing errors on invalid comment form submission.
-        
+
         """
         reset_db()
         p = create_post_with_comments()

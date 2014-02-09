@@ -36,18 +36,20 @@ def create_post( title=None, user=None, tags=None):
         A Post instance with the title or 'Test Post' as title and some sample text.
     """
     if not title:
-        title='Test post'
+        title = 'Test post'
 
     if not tags:
         tags = get_random_tags()
-    p = Post.objects.create( title=title,
-                                text=lipsum[ randrange( len(lipsum) ) ],
-                                tags=tags
-                            )
-    if user:
-        p.user_id = user.id
-    p.create_permalink_from_title()
-    p.save()
+
+    if not user:
+        user = create_user()
+
+    p = Post.objects.create(title=title,
+                            text=lipsum[randrange(len(lipsum))],
+                            tags=tags,
+                            user_id=user.id
+                        )
+
     return p
 
 def create_comment():
@@ -58,7 +60,7 @@ def create_comment():
     a = authors[ randrange( len(authors) ) ]
     return Comment( author=Author( name=a['name'], email=a['email'] ), text=lipsum[ randrange( len(lipsum) ) ][:100] )
 
-def create_post_with_comments(title=None, max_comments=5):
+def create_post_with_comments(title=None, user=None, max_comments=5):
     """Auxiliar function to create a post with some comments.
     Args:
         title: Optional string to be used as title.
@@ -66,7 +68,7 @@ def create_post_with_comments(title=None, max_comments=5):
     Returns:
         A Post instance with the title or 'Test Post' as title with some sample text and a list of comments.
     """
-    p = create_post(title)
+    p = create_post(title, user)
     num_comments = randrange( 2, max_comments )
     p.comments = [] 
     for c in xrange(num_comments):

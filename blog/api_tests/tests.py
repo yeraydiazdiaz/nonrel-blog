@@ -156,7 +156,7 @@ class BlogAPITests(APITestCase):
 
     def test_POST_posts_is_restricted_to_authenticated_users(self):
         """
-        Test posts/ID/comments endpoint with an empty database.
+        Test POST on /api/posts to create new posts is restricted to authenticated users.
         """
         reset_db()
         c = APIClient()
@@ -169,7 +169,7 @@ class BlogAPITests(APITestCase):
 
     def test_POST_posts_creates_post(self):
         """
-        Test posts/ID/comments endpoint with an empty database.
+        Test POST on /api/posts adds a new post correctly.
         """
         reset_db()
         u = create_user()
@@ -178,12 +178,23 @@ class BlogAPITests(APITestCase):
         data = {
             "title": "Test post title",
             "text": "Test post text",
-            "tags": "tag1 tag2",
+            "tags": ['tag1', 'tag2']
         }
         response = c.post('/api/posts', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Expected HTTP 201.')
         self.assertEqual(Post.objects.count(), 1, 'Expected one post after creation.')
         p = Post.objects.get()
         self.assertEqual(len(p.tags), 2, 'Expected two tags.')
+
+    def test_DELETE_posts_is_restricted_to_authenticated_users(self):
+        """
+        Test DELETE on a post is restricted to authenticated users.
+        """
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        p = create_post(user=u)
+        response = c.post('/api/posts/%s' % p.id)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Expected HTTP 403.')
 
 
