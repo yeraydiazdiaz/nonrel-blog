@@ -57,8 +57,8 @@ def create_comment():
     Returns:
         A Comment instance with a random name an email from the authors list and some sample text.
     """
-    a = authors[ randrange( len(authors) ) ]
-    return Comment( author=Author( name=a['name'], email=a['email'] ), text=lipsum[ randrange( len(lipsum) ) ][:100] )
+    a = authors[randrange(len(authors))]
+    return Comment(author=Author(name=a['name'], email=a['email']), text=lipsum[randrange(len(lipsum))][:100])
 
 def create_post_with_comments(title=None, user=None, max_comments=5):
     """Auxiliar function to create a post with some comments.
