@@ -13,6 +13,7 @@ app.BlogView = Backbone.View.extend({
         this.listenTo(app.blogRouter, 'route:home', this.home);
         this.listenTo(app.blogRouter, 'route:search', this.search);
         this.listenTo(app.blogRouter, 'route:tag', this.tag);
+        this.listenTo(app.blogRouter, 'route:user', this.user);
         this.listenTo(app.blogRouter, 'route:viewPost', this.getModelFromCollectionOrFetch);
         this.listenTo(app.blogRouter, 'route:createPost', this.createPost);
         this.listenTo(app.blogRouter, 'route:editPost', this.editPost);
@@ -92,6 +93,12 @@ app.BlogView = Backbone.View.extend({
     tag: function(param) {
         this.removeDetailViews();
         this.collection.url = '/api/posts/tag/' + param;
+        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+    },
+
+    user: function(username) {
+        this.removeDetailViews();
+        this.collection.url = '/api/posts/user/' + username;
         this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
     },
 

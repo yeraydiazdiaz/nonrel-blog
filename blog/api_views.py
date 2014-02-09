@@ -34,7 +34,7 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     API view for detail on Posts, responds to /api/posts/ID.
     Restricted access on update and delete.
     """
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created_on')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -51,7 +51,27 @@ class TagGenericList(generics.ListAPIView):
 
     def get_queryset(self):
         tag = self.kwargs.get(self.lookup_url_kwarg)
-        return Post.objects.filter(tags__in=[tag])
+        return Post.objects.filter(tags__in=[tag]).order_by('-created_on')
+
+
+class UserGenericList(generics.ListAPIView):
+    """
+    API view for lists of Posts created by a certain User matching 'username', responds to /api/posts/user/USERNAME.
+    By default we sort by inverse creation date and we paginate.
+    """
+    lookup_url_kwarg = 'username'
+    serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    paginate_by = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
+
+    def get_queryset(self):
+        from django.contrib.auth.models import User
+        username = self.kwargs.get(self.lookup_url_kwarg)
+        try:
+            u = User.objects.get(username=username)
+            return Post.objects.filter(user_id=u.id).order_by('-created_on')
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
+            return []
 
 
 class SearchGenericList(generics.ListAPIView):

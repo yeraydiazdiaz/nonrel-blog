@@ -90,12 +90,14 @@ def get_random_tags():
         random_tags.append( tags[ randrange( len(tags)) ] )
     return random_tags
 
-def create_user():
+def create_user(username=None):
     """Creates a user for login tests.
     
     """
     from django.contrib.auth.models import User
-    u = User.objects.create_user('John', 'johndoe@example.org', 'foobar')
+    if not username:
+        username = 'John'
+    u = User.objects.create_user(username, 'johndoe@example.org', 'foobar')
     u.save()
     return u
 

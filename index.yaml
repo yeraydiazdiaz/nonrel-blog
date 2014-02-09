@@ -32,6 +32,18 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: blog_post
+  properties:
+  - name: tags
+  - name: created_on
+    direction: desc
+
+- kind: blog_post
+  properties:
+  - name: user_id
+  - name: created_on
+    direction: desc
+
 - kind: search_relationindex_blog_post_search_index
   properties:
   - name: search_index_search_list_field

@@ -60,7 +60,7 @@
                 <% }); %>
                 </div>
             <% } %></p>
-            <p>by <strong><%= user_name %></strong> on <small><strong><%= created_on_readable %></strong></small>
+            <p>by <strong><a href="#user/<%= user_name %>"><%= user_name %></a></strong> on <small><strong><%= created_on_readable %></strong></small>
             <p><% print(text.substring(0,250)); %>...</p>
             <p class="right-italic"><% if(comments != null) {print(comments.length);}else{print(0);} %> comments</p>
         </script>
@@ -84,7 +84,7 @@
                 <% }); %>
                 </div>
             <% } %>
-            <p class="date">Posted by <%= user_name %> on <%= created_on_readable %></p>
+            <p class="date">Posted by <a href="#user/<%= user_name %>"><%= user_name %></a> on <%= created_on_readable %></p>
             <p><%= text %></p>
             <% try { if(skipCommentsForm) { %> <hr/> <% } } catch(e) { %>
             <div id="comment-section">

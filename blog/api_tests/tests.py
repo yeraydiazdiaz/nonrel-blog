@@ -246,4 +246,66 @@ class BlogAPITests(APITestCase):
         content = json.loads(response.content)
         self.assertEquals(len(content['results']), 0, 'Expected no results')
 
+    def test_user_endpoint_returns_no_results_on_empty_db(self):
+        """
+        Test user endpoint with an empty database.
+        """
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        response = c.get('/api/posts/user/' + u.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 0, 'Expected no results')
 
+    def test_user_endpoint_returns_one_result_with_one_post(self):
+        """
+        Test user endpoint with one matching post.
+        """
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        p = create_post(user=u)
+        response = c.get('/api/posts/user/' + u.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 1, 'Expected 1 result')
+        self.assertEquals(content['results'][0]['user_id'], u.id,
+                          'Expected user ids to match, got %s and expected %s' % (content['results'][0]['user_id'], u.id))
+
+    def test_user_endpoint_returns_no_results_if_user_has_no_posts(self):
+        """
+        Test user endpoint with one non-matching post.
+        """
+        reset_db()
+        c = APIClient()
+        joe = create_user(username='Joe')
+        john = create_user()
+        create_post(user=john)
+        response = c.get('/api/posts/user/' + joe.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 0, 'Expected no results')
+
+    def test_user_endpoint_returns_several_matching_results(self):
+        """
+        Test user endpoint with one matching post.
+        """
+        reset_db()
+        c = APIClient()
+        joe = create_user(username='Joe')
+        john = create_user()
+        for i in xrange(3):
+            if i % 2 == 0:
+                create_post(user=joe)
+            else:
+                create_post(user=john)
+
+        expected_results = 2
+        response = c.get('/api/posts/user/' + joe.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(content['count'], expected_results, 'Expected 2 result, got %s' % content['count'])
+        for i in xrange(expected_results):
+            self.assertEquals(content['results'][i]['user_id'], joe.id,
+                          'Expected user ids to match, got %s and expected %s' % (content['results'][i]['user_id'], joe.id))

@@ -25,6 +25,8 @@ app.PostListView = Backbone.View.extend({
         this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:createPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:home', this.showView);
+        this.listenTo(app.blogRouter, 'route:user', this.showView);
+        this.listenTo(app.blogRouter, 'route:tag', this.showView);
         this.listenTo(app.blogRouter, 'route:search', this.showView);
     },
 

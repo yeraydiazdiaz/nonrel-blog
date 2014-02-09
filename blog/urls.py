@@ -18,6 +18,7 @@ api_urlpatterns = patterns('blog.api_views',
     url(r'^posts/(?P<pk>[0-9]+)/comments$', api_views.CommentsGenericDetail.as_view(), name='comments'),
     url(r'^posts/tag/(?P<tag>.+)$', api_views.TagGenericList.as_view(), name='tag'),
     url(r'^posts/search/(?P<search_terms>.+)$', api_views.SearchGenericList.as_view(), name='search'),
+    url(r'^posts/user/(?P<username>.+)$', api_views.UserGenericList.as_view(), name='user'),
 )
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)
