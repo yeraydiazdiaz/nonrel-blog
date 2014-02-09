@@ -78,7 +78,12 @@ app.PostView = Backbone.View.extend({
     },
 
     deletePost: function() {
-        // TODO: implement deletePost via ajax call to DELETE
+        this.model.destroy( {
+            wait:true,
+            success: function() {
+                app.blogRouter.navigate('', {trigger: true} );
+            }
+        });
     }
 
 });
