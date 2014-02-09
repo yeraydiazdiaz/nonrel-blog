@@ -23,8 +23,10 @@ app.BlogView = Backbone.View.extend({
         if (collection === undefined) {
             collection = this.collection;
         }
-        this.postListView = new app.PostListView({ collection: collection });
-        this.$el.append(this.postListView.render().el);
+        if (this.postListView == undefined) {
+            this.postListView = new app.PostListView({ collection: collection });
+            this.$el.append(this.postListView.render().el);
+        }
     },
 
     renderPostView: function() {
@@ -72,23 +74,22 @@ app.BlogView = Backbone.View.extend({
 
     home: function() {
         this.removeDetailViews();
-        // we refetch the collection if we're coming back from a tag view.
         if (this.collection.url != '/api/posts') {
-            this.postListView.remove();
             this.collection.url = '/api/posts';
-            this.collection.fetch({error: this.fetchError, reset: true});
-        } else if (this.postListView == undefined) {
-            this.collection.fetch({error: this.fetchError, reset: true});
         }
+        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError, reset: true});
     },
 
     tag: function(param) {
         this.removeDetailViews();
-        if (this.postListView) {
-            this.postListView.remove();
-        }
         this.collection.url = '/api/posts/tag/' + param;
         this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+    },
+
+    onCollectionFetchComplete: function(view) {
+        return function() {
+            view.render(view.collection);
+        }
     },
 
     createPost: function() {

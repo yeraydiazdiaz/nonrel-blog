@@ -192,9 +192,22 @@ class BlogAPITests(APITestCase):
         """
         reset_db()
         c = APIClient()
+        p = create_post()
+        response = c.delete('/api/posts/%s' % p.id)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Expected HTTP 403.')
+
+    def test_DELETE_posts_deletes_the_post(self):
+        """
+        Test DELETE on a post is restricted to authenticated users.
+        """
+        reset_db()
+        c = APIClient()
         u = create_user()
         p = create_post(user=u)
-        response = c.post('/api/posts/%s' % p.id)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Expected HTTP 403.')
+        c.login(username=u.username, password='foobar')
+        response = c.delete('/api/posts/%s' % p.id)
+        print response.status_code
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, 'Expected HTTP 204.')
+        self.assertEqual(Post.objects.count(), 0, 'Expected no posts.')
 
 
