@@ -206,8 +206,44 @@ class BlogAPITests(APITestCase):
         p = create_post(user=u)
         c.login(username=u.username, password='foobar')
         response = c.delete('/api/posts/%s' % p.id)
-        print response.status_code
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, 'Expected HTTP 204.')
         self.assertEqual(Post.objects.count(), 0, 'Expected no posts.')
+
+    def test_search_endpoint_returns_no_results_on_empty_db(self):
+        """
+        Test search endpoint on an empty database.
+        """
+        reset_db()
+        c = APIClient()
+        response = c.get('/api/posts/search/foobar')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 0, 'Expected no results')
+
+    def test_search_endpoint_returns_one_result_correctly(self):
+        """
+        Test search endpoint with a single matching post.
+        """
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        p = create_post(title='foobar', user=u)
+        response = c.get('/api/posts/search/foobar')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 1, 'Expected 1 result')
+
+    def test_search_endpoint_returns_no_results_if_no_match(self):
+        """
+        Test search endpoint with no matching post.
+        """
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        p = create_post(title='Test title', user=u)
+        response = c.get('/api/posts/search/foobar')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        content = json.loads(response.content)
+        self.assertEquals(len(content['results']), 0, 'Expected no results')
 
 

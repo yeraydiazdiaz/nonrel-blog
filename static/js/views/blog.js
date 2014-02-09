@@ -11,10 +11,19 @@ app.BlogView = Backbone.View.extend({
     initialize: function() {
         this.listenToOnce(this.collection, 'reset', this.render);
         this.listenTo(app.blogRouter, 'route:home', this.home);
+        this.listenTo(app.blogRouter, 'route:search', this.search);
         this.listenTo(app.blogRouter, 'route:tag', this.tag);
         this.listenTo(app.blogRouter, 'route:viewPost', this.getModelFromCollectionOrFetch);
         this.listenTo(app.blogRouter, 'route:createPost', this.createPost);
         this.listenTo(app.blogRouter, 'route:editPost', this.editPost);
+        // intercept search form submission
+        $('.navbar-form').submit( function(view) {
+            return function(e) {
+                e.preventDefault();
+                view.search(e.currentTarget[0].value);
+                return false;
+            }
+        }(this));
     },
 
     // TODO: tags should be comma-separated, space-separated is dumb
@@ -108,6 +117,16 @@ app.BlogView = Backbone.View.extend({
             this.post = new app.Post({collection: this.collection, id: id});
             this.collection.add(this.post);
             this.post.fetch({complete: this.onModelFetchComplete(this, 'Edit'), error: this.fetchError});
+        }
+    },
+
+    search: function(search_terms) {
+        var terms = search_terms.trim();
+        if (terms) {
+            this.removeDetailViews();
+            app.blogRouter.navigate('search/' + search_terms, {trigger: true});
+            this.collection.url = '/api/posts/search/' + search_terms;
+            this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
         }
     }
 

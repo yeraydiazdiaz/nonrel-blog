@@ -8,7 +8,8 @@ var Workspace = Backbone.Router.extend({
         'post/*postID/edit': 'editPost',
         'post/*postID': 'viewPost',
         'tag/*tag': 'tag',
-        'create_post': 'createPost'
+        'create_post': 'createPost',
+        'search/*terms': 'search'
     }
 
 });

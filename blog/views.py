@@ -209,7 +209,7 @@ def search_view( request ):
     else:
         total_posts = 0
         sliced_posts = None
-    return render( request, 'search.html', { 'posts': sliced_posts, 'total_posts': total_posts, 'terms': search_terms } )
+    return render(request, 'search.html', {'posts': sliced_posts, 'total_posts': total_posts, 'terms': search_terms})
 
 def load_posts_view( request ):
     """Load posts view, handles asynchronous queries to retrieve more posts.

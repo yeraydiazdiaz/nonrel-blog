@@ -54,6 +54,25 @@ class TagGenericList(generics.ListAPIView):
         return Post.objects.filter(tags__in=[tag])
 
 
+class SearchGenericList(generics.ListAPIView):
+    """
+    API view for search results of Posts, responds to /api/posts/search/TERMS.
+    By default we sort by inverse creation date and we paginate.
+    """
+    lookup_url_kwarg = 'search_terms'
+    serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    paginate_by = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
+
+    def get_queryset(self):
+        from search.core import search
+        search_terms = self.kwargs.get(self.lookup_url_kwarg)
+        if search_terms:
+            results = search(Post, search_terms).order_by('-created_on')
+
+        return results
+
+
 class CommentsGenericDetail(generics.CreateAPIView):
     """
     API view for creating comments on a post, responds to /api/posts/ID/comments.

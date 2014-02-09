@@ -25,16 +25,21 @@ app.PostListView = Backbone.View.extend({
         this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:createPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:home', this.showView);
+        this.listenTo(app.blogRouter, 'route:search', this.showView);
     },
 
     render: function() {
-        this.collection.each(function(item) {
-            this.renderPostList(item);
-        }, this);
-        if (this.collection.next != null
-            && this.collection.next != 'None'
-            && $('#load-more-posts').get(0) == undefined) {
-            this.$el.append($('#loadMoreTemplate').html());
+        if (this.collection.length > 0) {
+            this.collection.each(function(item) {
+                this.renderPostList(item);
+            }, this);
+            if (this.collection.next != null
+                && this.collection.next != 'None'
+                && $('#load-more-posts').get(0) == undefined) {
+                this.$el.append($('#loadMoreTemplate').html());
+            }
+        } else {
+            this.$el.html('<h1>No results</h1>');
         }
         return this;
     },

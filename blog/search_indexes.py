@@ -1,6 +1,6 @@
 """
 
-    search_indexed.py
+    search_indexes.py
     
     Setup required indexes to allow the search module to perform searches on the Post model.
 
