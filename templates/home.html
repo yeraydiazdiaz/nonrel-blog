@@ -23,6 +23,7 @@
                 };
                 return _sync(method, model, options);
             };
+            app.csrf_token = '{{ csrf_token }}';
 
             // in order to preserve no JS functionality we change the the create new post link on load to a hash.
             if ($('#create-new-post')[0] != undefined) {

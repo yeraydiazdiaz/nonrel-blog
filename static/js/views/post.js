@@ -69,6 +69,11 @@ app.PostView = Backbone.View.extend({
         this.$el.find('.alert').remove();
         data = this.parseCommentForm();
         if (data != false) {
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFToken', app.csrf_token);
+                }
+            });
             $.ajax({
                 type: "POST",
                 url: '/api/posts/' + this.model.id + '/comments',
