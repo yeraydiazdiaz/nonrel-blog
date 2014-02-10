@@ -39,9 +39,9 @@ app.BlogView = Backbone.View.extend({
         }
     },
 
-    renderPostView: function() {
+    renderPostView: function(post) {
         this.postView = new app.PostView({
-            model: this.post
+            model: post
         })
         this.$el.append(this.postView.render().el);
     },
@@ -57,23 +57,23 @@ app.BlogView = Backbone.View.extend({
 
     getModelFromCollectionOrFetch: function(id) {
         this.removeDetailViews();
-        this.post = this.collection.get(id);
-        if (this.post == undefined) {
-            this.post = new app.Post({collection: this.collection, id: id});
-            this.collection.add(this.post);
-            this.post.fetch({complete: this.onModelFetchComplete(this, 'Create'), error: this.fetchError});
+        var post = this.collection.get(id);
+        if (post == undefined) {
+            post = new app.Post({id: id});
+            this.collection.add(post);
+            post.fetch({complete: this.onModelFetchComplete(this, 'Create', post), error: this.fetchError});
         }else{
-            this.renderPostView();
+            this.renderPostView(post);
         }
     },
 
-    onModelFetchComplete: function(view, mode) {
+    onModelFetchComplete: function(view, mode, post) {
         return function() {
             if (mode == 'Edit') {
-                view.createEditPostView = new app.CreateEditPostView({collection: view.collection, model: view.post, mode: 'Edit'});
+                view.createEditPostView = new app.CreateEditPostView({model: post, mode: 'Edit'});
                 view.$el.append(view.createEditPostView.render().el);
             }else{
-                view.renderPostView();
+                view.renderPostView(post);
             }
         }
     },
@@ -115,13 +115,14 @@ app.BlogView = Backbone.View.extend({
     },
 
     editPost: function(id) {
-        this.removeDetailViews();
         if (this.postView) {
-            this.post = this.postView.model;
-            this.createEditPostView = new app.CreateEditPostView({collection: this.collection, model: this.post, mode: 'Edit'});
+            var model = this.postView.model
+            this.removeDetailViews();
+            this.createEditPostView = new app.CreateEditPostView({model: model, mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
         }else{
-            this.post = new app.Post({collection: this.collection, id: id});
+            this.removeDetailViews();
+            this.post = new app.Post({id: id});
             this.collection.add(this.post);
             this.post.fetch({complete: this.onModelFetchComplete(this, 'Edit'), error: this.fetchError});
         }
