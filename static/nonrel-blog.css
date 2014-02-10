@@ -46,11 +46,15 @@
 
 #site-activity {
     float: right;
-    margin-right: 1em;
+    margin: 0 1em 1em 1em;
     max-width: 175px;
 }
 
 .activity {
     margin: 0 auto 1em 0;
     font-size: 0.9em;
+}
+
+.navbar-form {
+    width: 50%;
 }

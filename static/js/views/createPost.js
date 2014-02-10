@@ -52,7 +52,7 @@ app.CreateEditPostView = Backbone.View.extend({
     },
 
     previewPost: function() {
-        $('.alert').remove();
+        this.$el.find('.alert').remove();
         var data = this.parsePostForm();
         if (data != false) {
             // forms and admin buttons are not shown in previews
@@ -79,7 +79,7 @@ app.CreateEditPostView = Backbone.View.extend({
     },
 
     submitPost: function() {
-        $('.alert').remove();
+        this.$el.find('.alert').remove();
         var data = this.parsePostForm();
         if (data) {
             if (this.model) {

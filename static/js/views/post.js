@@ -54,7 +54,7 @@ app.PostView = Backbone.View.extend({
     },
 
     submitComment: function() {
-        $('.alert').remove();
+        this.$el.find('.alert').remove();
         data = this.parseCommentForm();
         if (data != false) {
             $.ajax({

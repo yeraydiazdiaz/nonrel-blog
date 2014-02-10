@@ -9,7 +9,9 @@ app.SiteActivityModel = Backbone.Model.extend({
         user_id: null,
         created_on_readable: null,
         timestamp: null,
-        task: ''
+        task: '',
+        rendered: false
+
     }
 
 });

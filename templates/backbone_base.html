@@ -160,10 +160,12 @@
             </div>
         </script>
         <script id="activityTemplate" type="text/template">
-            <div id="<%= id %>" class="activity alert alert-dismissable <% if (task=='Deleted') { print('alert-danger'); } else if (task=='Updated') { print('alert-info'); } else { print('alert-success'); } %>">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <%= task %> post <a href="#post/<%= post_id %>" class="alert-link"><%= post_title %></a>
-            </div>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <% if (task != 'Deleted') { %>
+            <%= task %> post <a href="#post/<%= post_id %>" class="alert-link"><%= post_title %></a>
+            <% } else { %>
+            <%= task %> post <%= post_title %>
+            <% } %>
         </script>
         <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.js"></script>
         <script type="text/javascript" src="/static/js/lib/underscore.js"></script>

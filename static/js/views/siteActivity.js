@@ -1,7 +1,21 @@
 var app = app || {};
 
 app.ActivityView = Backbone.View.extend({
+    tagName: 'div',
+    className: 'activity alert alert-dismissable',
     template: _.template($('#activityTemplate').html()),
+
+    initialize: function() {
+        var additional_class;
+        if (this.model.get('task') == 'Deleted') {
+            additional_class = 'alert-danger';
+        } else if (this.model.get('task') == 'Updated') {
+            additional_class = 'alert-info';
+        } else {
+            additional_class = 'alert-success';
+        }
+        this.$el.addClass(additional_class);
+    },
 
     render: function() {
         this.$el.html( this.template( this.model.toJSON() ));
@@ -20,7 +34,10 @@ app.SiteActivitiesView = Backbone.View.extend({
     render: function() {
         if (this.collection.length > 0) {
             this.collection.each(function(item) {
-                this.renderActivities(item);
+                if (!item.get('rendered')) {
+                    this.renderActivities(item);
+                    item.set({rendered: true});
+                }
             }, this);
         }
         return this;
@@ -37,11 +54,12 @@ app.SiteActivitiesView = Backbone.View.extend({
                 collection.updateTimestamp();
             }
         }(this.collection, item));
+        view.$el.hide();
         this.$el.append(view.el);
+        view.$el.fadeIn();
     },
 
     refreshView: function() {
-        this.$el.html('');
         this.collection.fetch({remove: false});
     }
 
