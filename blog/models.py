@@ -59,7 +59,7 @@ class SiteActivity(models.Model):
     user_id = models.IntegerField(blank=True, null=True)
     post_id = models.IntegerField(blank=True, null=True)
     post_title = models.CharField(max_length=255, blank=True, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
 
     TASK_CHOICES = (
         ('Created', 'Created a post'),

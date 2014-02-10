@@ -135,9 +135,18 @@ class SiteActivityGenericList(generics.ListAPIView):
     API view for SiteActivities, responds to /api/siteactivities.
     By default we sort by inverse creation date and we paginate.
     """
+    lookup_url_kwarg = 'timestamp'
     serializer_class = SiteActivitySerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = SiteActivity.objects.all().order_by('-created_on')
+
+    def get_queryset(self):
+        timestamp = self.kwargs.get(self.lookup_url_kwarg)
+        if timestamp:
+            import datetime
+            dt = datetime.datetime.fromtimestamp(int(timestamp))
+            return SiteActivity.objects.filter(created_on__gt=dt).order_by('-created_on')
+        else:
+            return SiteActivity.objects.all().order_by('-created_on')
 
 
 @api_view(('GET',))

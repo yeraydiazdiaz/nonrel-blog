@@ -100,8 +100,7 @@ class SiteActivitySerializer(serializers.ModelSerializer):
         return value.strftime('%A %d %b %Y - %H:%M:%S')
 
     def transform_timestamp(self, obj, value):
-        import calendar
-        return int(calendar.timegm(value.utctimetuple()))
+        return value.strftime('%s')
 
     class Meta:
         model = SiteActivity

@@ -5,7 +5,8 @@
 """
 
 from rest_framework.test import APITestCase
-import json
+import json, datetime, time
+from django.utils import timezone
 from blog.models import *
 from blog.test_aux import *
 from rest_framework import status
@@ -327,9 +328,26 @@ class BlogAPITests(APITestCase):
         """
         reset_db()
         c = APIClient()
-        p = create_post()
+        u = create_user()
+        c.login(username=u.username, password='foobar')
+        data = {
+            "title": "Test post title",
+            "text": "Test post text",
+            "tags": ['tag1', 'tag2']
+        }
+        c.post('/api/posts', data, format='json')
+        time.sleep(1)
+        data['title'] = "Second test post title"
+        c.post('/api/posts', data, format='json')
+        expected = 2
+        request_url = '/api/siteactivities'
+        response = c.get(request_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
+        content = json.loads(response.content)
+        self.assertEquals(len(content), expected, 'Expected %s results, got %s' % (expected, len(content)))
+        request_url = '/api/siteactivities/%s' % timezone.now().strftime('%s')
+        response = c.get(request_url)
         expected = 1
-        response = c.get('/api/siteactivities')
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
         content = json.loads(response.content)
         self.assertEquals(len(content), expected, 'Expected %s results, got %s' % (expected, len(content)))
