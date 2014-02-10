@@ -13,6 +13,7 @@ app.PostView = Backbone.View.extend({
     },
 
     initialize: function() {
+        this.listenTo(this.model, 'sync', this.render);
     },
 
     render: function() {
@@ -74,17 +75,17 @@ app.PostView = Backbone.View.extend({
                 data: data,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                complete: this.onCommentAjaxComplete(this.model)
+                complete: this.onCommentAjaxComplete(this)
             });
         }
     },
 
-    onCommentAjaxComplete: function(model) {
+    onCommentAjaxComplete: function(view) {
         return function(jqXHR, textStatus) {
             if (textStatus == 'error') {
                 alert(jqXHR.responseText);
             } else {
-                model.fetch();
+                view.model.fetch();
             }
         }
     },

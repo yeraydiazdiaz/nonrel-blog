@@ -30,7 +30,7 @@ class PostGenericList(generics.ListCreateAPIView):
 
     def post_save(self, obj, created=False):
         if created:
-            from blog.models import api_create_signal
+            from blog.api_signals import api_create_signal
             api_create_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
 
 
@@ -44,11 +44,11 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def post_save(self, obj, created=False):
-        from blog.models import api_update_signal
+        from blog.api_signals import api_update_signal
         api_update_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
 
     def post_delete(self, obj):
-        from blog.models import api_delete_signal
+        from blog.api_signals import api_delete_signal
         api_delete_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
 
 
@@ -100,10 +100,8 @@ class SearchGenericList(generics.ListAPIView):
     def get_queryset(self):
         from search.core import search
         search_terms = self.kwargs.get(self.lookup_url_kwarg)
-        if search_terms:
-            results = search(Post, search_terms).order_by('-created_on')
-
-        return results
+        # force the evaluation of the search RelationIndexQuery result as the pagination doesn't seem to like it
+        return [q for q in search(Post, search_terms).order_by('-created_on')]
 
 
 class CommentsGenericDetail(generics.CreateAPIView):
@@ -122,9 +120,11 @@ class CommentsGenericDetail(generics.CreateAPIView):
             post = Post.objects.get(pk=self.kwargs.get(self.lookup_field))
             if post.comments is None:
                 post.comments = [obj]
-            elif post.comments == []:
+            else:
                 post.comments.append(obj)
             post.save()
+            from blog.api_signals import api_comment_signal
+            api_comment_signal.send(sender=None, post_id=post.id, post_title=post.title)
         except Post.DoesNotExist:
             from django.http import Http404
             raise Http404
@@ -152,7 +152,7 @@ class SiteActivityGenericList(generics.ListAPIView):
 @api_view(('GET',))
 def api_root(request, format=None):
     """
-    Entry point to API
+    Entry point to API for use on the browsable API REST Framework feature.
     """
     return Response({
         'post': reverse('post-list', request=request, format=format),
