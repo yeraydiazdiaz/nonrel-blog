@@ -32,6 +32,7 @@ app.PostListView = Backbone.View.extend({
 
     render: function() {
         if (this.collection.length > 0) {
+            this.$el.html('<h1>' + this.getHeadingMessage() +'</h1>');
             this.collection.each(function(item) {
                 this.renderPostList(item);
             }, this);
@@ -44,6 +45,18 @@ app.PostListView = Backbone.View.extend({
             this.$el.html('<h1>No results</h1>');
         }
         return this;
+    },
+
+    getHeadingMessage: function() {
+        if (this.collection.url.indexOf('search') != -1) {
+            return 'Search results for: ' + this.collection.url.substr(this.collection.url.lastIndexOf('/')+1)
+        } else if (this.collection.url.indexOf('tag') != -1) {
+            return 'Posts with tag: ' + this.collection.url.substr(this.collection.url.lastIndexOf('/')+1)
+        } else if (this.collection.url.indexOf('user') != -1) {
+            return 'Posts by user: ' + this.collection.url.substr(this.collection.url.lastIndexOf('/')+1)
+        } else {
+            return '';
+        }
     },
 
     renderPostList: function(item) {
