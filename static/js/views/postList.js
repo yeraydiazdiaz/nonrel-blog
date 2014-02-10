@@ -20,14 +20,15 @@ app.PostListView = Backbone.View.extend({
 
     initialize: function() {
         this.listenTo(this.collection, 'add', this.renderPostList);
-        this.listenTo(this.collection, 'destroy', this.refreshView);
-        this.listenTo(this.collection, 'sync', this.refreshView);
+        this.listenTo(this.collection, 'change', this.render);
+        this.listenTo(this.collection, 'sync', this.render);
         this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:createPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:home', this.showView);
         this.listenTo(app.blogRouter, 'route:user', this.showView);
         this.listenTo(app.blogRouter, 'route:tag', this.showView);
         this.listenTo(app.blogRouter, 'route:search', this.showView);
+        this.hash = window.location.hash;
     },
 
     render: function() {
@@ -44,6 +45,7 @@ app.PostListView = Backbone.View.extend({
         } else {
             this.$el.html('<h1>No results</h1>');
         }
+        this.showView();
         return this;
     },
 
@@ -75,23 +77,17 @@ app.PostListView = Backbone.View.extend({
         this.collection.fetch({remove: false, data: {page: Number(lastDigit)}});
     },
 
-    checkForMorePosts: function() {
-        if (this.collection.next !== null && $('#load-more-posts').get(0) == undefined) {
-            this.$el.append($('#loadMoreTemplate').html());
-        }
-    },
-
-    refreshView: function() {
-        this.$el.html('');
-        this.render();
-    },
-
-    hideView: function() {
+    hideView: function(param) {
         this.$el.hide();
     },
 
-    showView: function() {
-        this.$el.fadeIn();
+    showView: function(param) {
+        if (this.hash == window.location.hash) {
+            this.$el.fadeIn();
+        }
+        if (window.location.hash.indexOf('post') != 1) {
+            this.hash = window.location.hash;
+        }
     }
 
 });

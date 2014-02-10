@@ -96,7 +96,7 @@ app.PostView = Backbone.View.extend({
     },
 
     confirmDelete: function() {
-        this.$el.before(this.confirmDeletionTemplate());
+        this.$el.html(this.confirmDeletionTemplate() + this.$el.html());
         $(".alert").alert()
         $('#delete-no').click( function() {
             $(".alert").alert('close');
@@ -111,7 +111,6 @@ app.PostView = Backbone.View.extend({
 
     deletePost: function() {
         this.model.destroy( {
-            wait:true,
             success: function() {
                 app.blogRouter.navigate('', {trigger: true} );
             }
