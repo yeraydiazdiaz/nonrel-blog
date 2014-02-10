@@ -122,9 +122,9 @@ app.BlogView = Backbone.View.extend({
             this.$el.append(this.createEditPostView.render().el);
         }else{
             this.removeDetailViews();
-            this.post = new app.Post({id: id});
-            this.collection.add(this.post);
-            this.post.fetch({complete: this.onModelFetchComplete(this, 'Edit'), error: this.fetchError});
+            var post = new app.Post({id: id});
+            this.collection.add(post);
+            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError});
         }
     },
 

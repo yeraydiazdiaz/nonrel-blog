@@ -25,6 +25,15 @@ app.CreateEditPostView = Backbone.View.extend({
         return this;
     },
 
+    replaceNewLinesWithPs: function(raw_template) {
+        var added_ps = '<p>'+raw_template.replace(/\n+/g, '</p><p>')
+        if (added_ps.substr(-4) != '</p>') {
+            return added_ps + '</p>';
+        }else{
+            return added_ps;
+        }
+    },
+
     validateField: function(field) {
         var value = field.val();
         if (value != '') {
@@ -74,6 +83,7 @@ app.CreateEditPostView = Backbone.View.extend({
                 data.created_on_readable = 'just now';
                 data.comments = [];
             }
+            data.text = this.replaceNewLinesWithPs(data.text)
             this.$('#post-preview').html( this.postTemplate(data) );
         }
     },
