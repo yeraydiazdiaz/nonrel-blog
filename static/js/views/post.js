@@ -16,8 +16,19 @@ app.PostView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$el.html( this.template( this.model.toJSON() ));
+        var json = this.model.toJSON()
+        json.text = this.replaceNewLinesWithPs(json.text);
+        this.$el.html( this.template( json ) );
         return this;
+    },
+
+    replaceNewLinesWithPs: function(raw_template) {
+        var added_ps = '<p>'+raw_template.replace(/\n+/g, '</p><p>')
+        if (added_ps.substr(-4) != '</p>') {
+            return added_ps + '</p>';
+        }else{
+            return added_ps;
+        }
     },
 
     validateField: function(field) {
