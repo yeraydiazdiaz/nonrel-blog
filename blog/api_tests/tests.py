@@ -351,3 +351,42 @@ class BlogAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200 got %s.' % response.status_code)
         content = json.loads(response.content)
         self.assertEquals(len(content), expected, 'Expected %s results, got %s' % (expected, len(content)))
+
+    def test_alltags_returns_no_content_on_empty_db(self):
+        """
+        Test alltags endpoint over empty database.
+        """
+        reset_db()
+        c = APIClient()
+        response = c.get('/api/alltags')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, 'Expected HTTP 204.')
+
+    def test_alltags_returns_one_tag_on_one_post_with_one_tag(self):
+        """
+        Test alltags endpoint with one post with one tag.
+        """
+        reset_db()
+        c = APIClient()
+        p = create_post(tags=['tag'])
+        response = c.get('/api/alltags')
+        expected = 1
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        self.assertEqual(len(content), expected, 'Expected %s tag, got %s.' % (expected, len(content)))
+
+    def test_alltags_returns_correct_tags_with_several_posts(self):
+        """
+        Test alltags endpoint with several tags.
+        """
+        reset_db()
+        c = APIClient()
+        create_post(tags=['tag'])
+        create_post(tags=['foo', 'tag'])
+        create_post(tags=['foo', 'bar'])
+        create_post(tags=['bar', 'tag'])
+        create_post(tags=['bar', 'foo'])
+        response = c.get('/api/alltags')
+        expected = 3
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        self.assertEqual(len(content), expected, 'Expected %s tag, got %s.' % (expected, len(content)))

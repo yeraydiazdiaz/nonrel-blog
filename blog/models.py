@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from djangotoolbox.fields import ListField, EmbeddedModelField
 
+
 class Post(models.Model):
     """
     Basic model for blog posts, includes comments and tags as lists.
@@ -31,8 +32,9 @@ class Post(models.Model):
         super(Post, self).save(*args, **kwargs)
     
     def __unicode__(self):
-        return '%s - %s ...' % ( self.title, self.text[:30] )
-    
+        return '%s - %s ...' % (self.title, self.text[:30].replace('\n', ''))
+
+
 class Comment(models.Model):
     """
     Comment model, to be included as a list in the Post model.
@@ -43,7 +45,8 @@ class Comment(models.Model):
 
     def __unicode__(self):
         return u'%s: %s' % (self.author.name, self.text[:50] )
-    
+
+
 class Author(models.Model):
     """
     Author model used in Comments

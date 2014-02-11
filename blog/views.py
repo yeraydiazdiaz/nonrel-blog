@@ -247,7 +247,7 @@ def save_comment( post, author_form, comment_form ):
     """Comment form is valid, update the post with the new comment.
     
     """
-    from blog.models import comment_signal
+    from blog.api_signals import api_comment_signal
     a = Author.objects.create(name=author_form.cleaned_data['name'], email=author_form.cleaned_data['email'])
     c = Comment.objects.create(author=a, text=comment_form.cleaned_data['text'])
     if not post.comments:
@@ -255,7 +255,7 @@ def save_comment( post, author_form, comment_form ):
     else:
         post.comments.append(c)
     post.save()
-    comment_signal.send(sender=None, post_id=post.id, post_title=post.title)
+    api_comment_signal.send(sender=None, post_id=post.id, post_title=post.title)
     return post
 
 def get_more_posts( GET ):

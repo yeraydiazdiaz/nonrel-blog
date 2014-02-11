@@ -10,6 +10,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.status import HTTP_204_NO_CONTENT
 
 from serializers import *
 
@@ -150,6 +151,16 @@ class SiteActivityGenericList(generics.ListAPIView):
 
 
 @api_view(('GET',))
+def all_tags(request, format=None):
+    """
+    All-tags endpoint, returns a list of the unique tags in the posts.
+    """
+    if Post.objects.count():
+        return Response(list(set([t for p in Post.objects.all() for t in p.tags])))
+    else:
+        return Response('', status=HTTP_204_NO_CONTENT)
+
+@api_view(('GET',))
 def api_root(request, format=None):
     """
     Entry point to API for use on the browsable API REST Framework feature.
@@ -157,4 +168,5 @@ def api_root(request, format=None):
     return Response({
         'post': reverse('post-list', request=request, format=format),
         'site-activities': reverse('site-activities', request=request, format=format),
+        'all-tags': reverse('all-tags', request=request, format=format),
     })

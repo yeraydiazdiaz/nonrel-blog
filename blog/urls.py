@@ -21,6 +21,7 @@ api_urlpatterns = patterns('blog.api_views',
     url(r'^posts/user/(?P<username>.+)$', api_views.UserGenericList.as_view(), name='user'),
     url(r'^siteactivities$', api_views.SiteActivityGenericList.as_view(), name='site-activities'),
     url(r'^siteactivities/(?P<timestamp>[0-9]+)$', api_views.SiteActivityGenericList.as_view(), name='site-activities'),
+    url(r'^alltags$', 'all_tags', name='all-tags'),
 )
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)
