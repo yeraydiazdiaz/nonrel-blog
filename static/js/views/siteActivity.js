@@ -28,6 +28,9 @@ app.SiteActivitiesView = Backbone.View.extend({
 
     initialize: function() {
         this.listenTo(app.blogCollection, 'sync', this.refreshView);
+        this.listenTo(app.blogCollection, 'add', this.refreshView);
+        this.listenTo(app.blogCollection, 'destroy', this.refreshView);
+        this.listenTo(app.blogCollection, 'change', this.refreshView);
         this.listenTo(this.collection, 'sync', this.render);
     },
 

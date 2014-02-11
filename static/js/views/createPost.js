@@ -90,18 +90,34 @@ app.CreateEditPostView = Backbone.View.extend({
 
     submitPost: function() {
         this.$el.find('.alert').remove();
+        this.toggleButtons();
         var data = this.parsePostForm();
         if (data) {
             if (this.model) {
-                this.model.save(data, {success: this.onSuccess});
+                // patching does NOT work in development server, not sure why
+                this.model.save(data, {patch: true, success: this.onSuccess, error: this.onError});
             } else {
-                this.collection.create(data, {wait: true, success: this.onSuccess});
+                this.collection.create(data, {wait: true, success: this.onSuccess, error: this.onError});
             }
+        }
+    },
+
+    toggleButtons: function() {
+        if ($('#submit-post').attr('disabled') == undefined) {
+            $('#submit-post').attr('disabled', 'disabled');
+            $('#preview-post').attr('disabled', 'disabled');
+        } else {
+            $('#submit-post').removeAttr('disabled');
+            $('#preview-post').removeAttr('disabled');
         }
     },
 
     onSuccess: function(model, response, options) {
         app.blogRouter.navigate('post/' + model.id, {trigger: true} );
+    },
+
+    onError: function(model, response, options) {
+        alert(response.responseText);
     }
 
 });

@@ -147,6 +147,7 @@ app.BlogView = Backbone.View.extend({
      */
     onCollectionFetchComplete: function(view) {
         return function() {
+            view.collection.sort();
             view.render(view.collection);
         }
     },
@@ -176,6 +177,10 @@ app.BlogView = Backbone.View.extend({
         if (this.postView) {
             var model = this.postView.model;
             this.removeDetailViews();
+            if (this.collection.url != '/api/posts') {
+                this.collection.url = '/api/posts';
+                this.postListView.dirty = true;
+            }
             this.createEditPostView = new app.CreateEditPostView({model: model, mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
         }else{
@@ -215,7 +220,8 @@ app.BlogView = Backbone.View.extend({
             }
             this.fetchCollection();
         }else{
-            if (this.collection.length == 0) {
+            // if there is 1 or less we force a fetch as the user probably started in a detail view.
+            if (this.collection.length <= 1) {
                 this.fetchCollection();
             }
         }

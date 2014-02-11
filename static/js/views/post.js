@@ -104,6 +104,7 @@ app.PostView = Backbone.View.extend({
      */
     submitComment: function() {
         this.$el.find('.alert').remove();
+        this.toggleCommentSubmitButtton();
         data = this.parseCommentForm();
         if (data != false) {
             $.ajaxSetup({
@@ -162,9 +163,21 @@ app.PostView = Backbone.View.extend({
     deletePost: function() {
         this.model.destroy( {
             success: function() {
+                app.blogCollection.fetch();
                 app.blogRouter.navigate('', {trigger: true} );
             }
         });
-    }
+    },
+
+    /**
+     * Adds/removes the disabled attribute on the submit comment button.
+     */
+    toggleCommentSubmitButtton: function() {
+        if ($('#comment-submit').attr('disabled') == undefined) {
+            $('#comment-submit').attr('disabled', 'disabled');
+        } else {
+            $('#comment-submit').removeAttr('disabled');
+        }
+    },
 
 });
