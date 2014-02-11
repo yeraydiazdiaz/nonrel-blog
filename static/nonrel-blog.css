@@ -64,3 +64,8 @@
 .navbar-form {
     width: 50%;
 }
+
+#loading-icon {
+    display: block;
+    margin: 10em auto 0 auto;
+}

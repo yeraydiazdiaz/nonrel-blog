@@ -21,7 +21,7 @@ app.BlogView = Backbone.View.extend({
         this.listenTo(app.blogRouter, 'route:search', this.search);
         this.listenTo(app.blogRouter, 'route:tag', this.tag);
         this.listenTo(app.blogRouter, 'route:user', this.user);
-        this.listenTo(app.blogRouter, 'route:viewPost', this.getModelFromCollectionOrFetch);
+        this.listenTo(app.blogRouter, 'route:viewPost', this.viewPost);
         this.listenTo(app.blogRouter, 'route:createPost', this.createPost);
         this.listenTo(app.blogRouter, 'route:editPost', this.editPost);
         // intercept search form submission
@@ -44,6 +44,10 @@ app.BlogView = Backbone.View.extend({
         }
         if (this.postListView == undefined) {
             this.postListView = new app.PostListView({ collection: collection });
+            // at startup check if a Detail view has been created, if not allow fading in of the postListView
+            if (!this.inDetailView) {
+                this.postListView.pendingFade = true;
+            }
             this.$el.append(this.postListView.render().el);
         }
     },
@@ -77,15 +81,57 @@ app.BlogView = Backbone.View.extend({
      * has typed the URL manually which requires fetch from the server.
      * @param id ID of the post to be retrieved from the collection or the server.
      */
-    getModelFromCollectionOrFetch: function(id) {
+    viewPost: function(id) {
         this.removeDetailViews();
+        this.inDetailView = true;
         var post = this.collection.get(id);
         if (post == undefined) {
             post = new app.Post({id: id});
+            this.changeCollectionURL('/api/posts');
             this.collection.add(post);
-            post.fetch({complete: this.onModelFetchComplete(this, 'Create', post), error: this.fetchError});
+            post.fetch({success: this.onModelFetchComplete(this, 'View', post), error: this.fetchError});
         }else{
             this.renderPostView(post);
+        }
+    },
+
+    /**
+     * Handles routing to "Create new post", a special case CreateEdit view without a model to pass,
+     * we do pass a base URL collection to ensure proper creation from the view.
+     */
+    createPost: function() {
+        this.removeDetailViews();
+        this.inDetailView = true;
+        if (this.collection.url != '/api/posts') {
+            this.collection.url = '/api/posts';
+            this.postListView.dirty = true;
+        }
+        this.createEditPostView = new app.CreateEditPostView({collection: this.collection, mode: 'Create'})
+        this.$el.append(this.createEditPostView.render().el);
+        $('#post-title').focus();
+    },
+
+    /**
+     * Handles routing to edit post, if the user was reading the post and we route we avoid fetching
+     * the model and simply retrieve it from the PostView. Otherwise create a new Post instance and
+     * fetch the data from the server.
+     * @param id ID of the post to be retrieve from the server if needed.
+     */
+    editPost: function(id) {
+        this.removeDetailViews();
+        this.inDetailView = true;
+        this.changeCollectionURL('/api/posts')
+        if (this.postView) {
+            var post = this.postView.model;
+            this.createEditPostView = new app.CreateEditPostView({model: post, mode: 'Edit'});
+            this.$el.append(this.createEditPostView.render().el);
+        } else if (this.collection.get(id) != undefined) {
+            this.createEditPostView = new app.CreateEditPostView({model: this.collection.get(id), mode: 'Edit'});
+            this.$el.append(this.createEditPostView.render().el);
+        } else {
+            var post = new app.Post({id: id});
+            this.collection.add(post);
+            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError});
         }
     },
 
@@ -98,9 +144,9 @@ app.BlogView = Backbone.View.extend({
      * @returns {Function}
      */
     onModelFetchComplete: function(view, mode, post) {
-        return function() {
+        return function(model, response, options) {
             if (mode == 'Edit') {
-                view.createEditPostView = new app.CreateEditPostView({model: post, mode: 'Edit'});
+                view.createEditPostView = new app.CreateEditPostView({model: post, mode: mode});
                 view.$el.append(view.createEditPostView.render().el);
             }else{
                 view.renderPostView(post);
@@ -141,55 +187,6 @@ app.BlogView = Backbone.View.extend({
         this.changeCollectionURL('/api/posts/user/' + username);
     },
 
-    /**
-     * Handles the successful fetching of the collection on previous functions, rendering the
-     * view passing the new collection.
-     */
-    onCollectionFetchComplete: function(view) {
-        return function() {
-            view.collection.sort();
-            view.render(view.collection);
-        }
-    },
-
-    /**
-     * Handles routing to "Create new post", a special case CreateEdit view without a model to pass,
-     * we do pass a base URL collection to ensure proper creation from the view.
-     */
-    createPost: function() {
-        this.removeDetailViews();
-        if (this.collection.url != '/api/posts') {
-            this.collection.url = '/api/posts';
-            this.postListView.dirty = true;
-        }
-        this.createEditPostView = new app.CreateEditPostView({collection: this.collection, mode: 'Create'})
-        this.$el.append(this.createEditPostView.render().el);
-        $('#post-title').focus();
-    },
-
-    /**
-     * Handles routing to edit post, if the user was reading the post and we route we avoid fetching
-     * the model and simply retrieve it from the PostView. Otherwise create a new Post instance and
-     * fetch the data from the server.
-     * @param id ID of the post to be retrieve from the server if needed.
-     */
-    editPost: function(id) {
-        if (this.postView) {
-            var model = this.postView.model;
-            this.removeDetailViews();
-            if (this.collection.url != '/api/posts') {
-                this.collection.url = '/api/posts';
-                this.postListView.dirty = true;
-            }
-            this.createEditPostView = new app.CreateEditPostView({model: model, mode: 'Edit'});
-            this.$el.append(this.createEditPostView.render().el);
-        }else{
-            this.removeDetailViews();
-            var post = new app.Post({id: id});
-            this.collection.add(post);
-            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError});
-        }
-    },
 
     /**
      * Handles routing to search, if the terms are valid set the appropriate URL for the API endpoint
@@ -198,11 +195,10 @@ app.BlogView = Backbone.View.extend({
      */
     search: function(search_terms) {
         var terms = search_terms.trim();
-        if (terms) {
+        if (terms != '') {
             this.removeDetailViews();
+            this.changeCollectionURL('/api/posts/search/' + search_terms)
             app.blogRouter.navigate('search/' + search_terms, {trigger: true});
-            this.collection.url = '/api/posts/search/' + search_terms;
-            this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
         }
     },
 
@@ -235,6 +231,17 @@ app.BlogView = Backbone.View.extend({
             success: this.onCollectionFetchComplete(this),
             error: this.fetchError
         });
+    },
+
+    /**
+     * Handles the successful fetching of the collection on previous functions, rendering the
+     * view passing the new collection.
+     */
+    onCollectionFetchComplete: function(view) {
+        return function() {
+            view.collection.sort();
+            view.render(view.collection);
+        }
     }
 
 });

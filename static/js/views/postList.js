@@ -24,6 +24,7 @@ app.PostSnippetView = Backbone.View.extend({
  */
 app.PostListView = Backbone.View.extend({
     tagName: 'div',
+    loadingIconTag: '<img src="/static/img/loaderb64.gif" id="loading-icon" />',
 
     events: {
         'click #load-more-posts': 'loadMorePosts'
@@ -34,6 +35,8 @@ app.PostListView = Backbone.View.extend({
      */
     initialize: function() {
         this.dirty = true;
+        this.pendingFade = false;
+        this.$el.hide();
         this.listenTo(this.collection, 'sync', this.render);
         this.listenTo(this.collection, 'add', this.setToDirty);
         this.listenTo(this.collection, 'destroy', this.setToDirty);
@@ -133,6 +136,7 @@ app.PostListView = Backbone.View.extend({
             this.$el.fadeIn();
             this.pendingFade = false;
         }else{
+            this.$el.html(this.loadingIconTag);
             this.pendingFade = true;
         }
     },
@@ -142,7 +146,7 @@ app.PostListView = Backbone.View.extend({
      */
     setToDirty: function() {
         this.dirty = true;
-        this.$el.html('');
+        this.$el.html(this.loadingIconTag);
     }
 
 });
