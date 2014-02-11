@@ -35,8 +35,7 @@ app.BlogView = Backbone.View.extend({
     },
 
     /**
-     * Render the view using PostListView with different collections depending
-     * on the page the user has navigated to.
+     * Create and render the view using PostListView.
      * @param collection Optionally pass a collection created on search, tag or author routes.
      */
     render: function(collection) {
@@ -121,10 +120,7 @@ app.BlogView = Backbone.View.extend({
      */
     home: function() {
         this.removeDetailViews();
-        if (this.collection.url != '/api/posts') {
-            this.collection.url = '/api/posts';
-        }
-        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError, reset: true});
+        this.changeCollectionURL('/api/posts')
     },
 
     /**
@@ -133,8 +129,7 @@ app.BlogView = Backbone.View.extend({
      */
     tag: function(param) {
         this.removeDetailViews();
-        this.collection.url = '/api/posts/tag/' + param;
-        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+        this.changeCollectionURL('/api/posts/tag/' + param);
     },
 
     /**
@@ -143,8 +138,7 @@ app.BlogView = Backbone.View.extend({
      */
     user: function(username) {
         this.removeDetailViews();
-        this.collection.url = '/api/posts/user/' + username;
-        this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
+        this.changeCollectionURL('/api/posts/user/' + username);
     },
 
     /**
@@ -163,9 +157,13 @@ app.BlogView = Backbone.View.extend({
      */
     createPost: function() {
         this.removeDetailViews();
-        this.collection.url = '/api/posts';
+        if (this.collection.url != '/api/posts') {
+            this.collection.url = '/api/posts';
+            this.postListView.dirty = true;
+        }
         this.createEditPostView = new app.CreateEditPostView({collection: this.collection, mode: 'Create'})
         this.$el.append(this.createEditPostView.render().el);
+        $('#post-title').focus();
     },
 
     /**
@@ -176,7 +174,7 @@ app.BlogView = Backbone.View.extend({
      */
     editPost: function(id) {
         if (this.postView) {
-            var model = this.postView.model
+            var model = this.postView.model;
             this.removeDetailViews();
             this.createEditPostView = new app.CreateEditPostView({model: model, mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
@@ -201,6 +199,36 @@ app.BlogView = Backbone.View.extend({
             this.collection.url = '/api/posts/search/' + search_terms;
             this.collection.fetch({success: this.onCollectionFetchComplete(this), error: this.fetchError});
         }
+    },
+
+    /**
+     * On routing to a different post list view we first check if the URL are different and
+     * if the collection is empty before fetching.
+     * If the URLs are different the current data on the PostListView is obsolete.
+     * @param newURL The target URL routing to.
+     */
+    changeCollectionURL: function(newURL) {
+        if (this.collection.url != newURL) {
+            this.collection.url = newURL;
+            if (this.postListView) {
+                this.postListView.setToDirty();
+            }
+            this.fetchCollection();
+        }else{
+            if (this.collection.length == 0) {
+                this.fetchCollection();
+            }
+        }
+    },
+
+    /**
+     * Shorthand function for fetching the collection.
+     */
+    fetchCollection: function() {
+        this.collection.fetch({
+            success: this.onCollectionFetchComplete(this),
+            error: this.fetchError
+        });
     }
 
 });
