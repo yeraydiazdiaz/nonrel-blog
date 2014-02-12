@@ -16,10 +16,10 @@ app.ActivityView = Backbone.View.extend({
         var additional_class;
         if (this.model.get('task') == 'Deleted') {
             additional_class = 'alert-danger';
-        } else if (this.model.get('task') == 'Updated') {
-            additional_class = 'alert-info';
-        } else {
+        } else if (this.model.get('task') == 'Created') {
             additional_class = 'alert-success';
+        } else {
+            additional_class = 'alert-info';
         }
         this.$el.addClass(additional_class);
     },

@@ -177,37 +177,33 @@ app.CreateEditPostView = Backbone.View.extend({
 
     /**
      * Initializes the tag autocomplete system and fires updates on it.
-     * If initializing fetches on the uniqueTagsCollection already created at startup,
      * if the collection and the view are in place simply call filter on the view.
-     * If the collection exists but not the view create the view.
+     * Otherwise fetch on the uniqueTagsCollection and create the view.
      */
     getUniqueTags: function() {
-        if (app.uniqueTagsCollection.length == 0) {
-            app.uniqueTagsCollection.fetch({success: this.onTagFetchSuccess(this), error: this.onError});
-        } else if (this.tagSuggestionsView != undefined) {
+        if (this.tagSuggestionsView != undefined) {
             this.tagSuggestionsView.filter($('#post-tags').val().trimLeft().split(' '));
         } else {
-            this.createTagSuggestionView(this.collection);
+            app.uniqueTagsCollection.fetch({success: this.onTagFetchSuccess(this), error: this.onError});
         }
     },
 
     /**
      * Handler of a successful fetch on the uniqueTags collection, creating the TagSuggestionView.
-     * @param view Instance of this view to access it's methods.
+     * @param view Instance of this view to access its methods.
      * @returns {Function} Anonymous function that calls the view's method.
      */
     onTagFetchSuccess: function(view) {
         return function(collection, response, options) {
-            view.createTagSuggestionView(collection)
+            view.createTagSuggestionView()
         }
     },
 
     /**
-     * Function to create the view passing it a collection and add it's render result to this view.
-     * @param collection Collection to be handed to the view.
+     * Function to create the view and add its render result to this view.
      */
-    createTagSuggestionView: function(collection) {
-        this.tagSuggestionsView = new app.TagSuggestionsView({collection: collection});
+    createTagSuggestionView: function() {
+        this.tagSuggestionsView = new app.TagSuggestionsView({collection: app.uniqueTagsCollection});
         var split = $('#post-tags').val().trimLeft().split(' ');
         this.tagSuggestionsView.filter(split);
         $('#post-tags').after(this.tagSuggestionsView.el);

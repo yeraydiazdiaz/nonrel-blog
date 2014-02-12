@@ -48,7 +48,6 @@ app.TagSuggestionsView = Backbone.View.extend({
      */
     filter: function(currentTagsArray) {
         // get list based on last element
-        console.log(currentTagsArray);
         var lastElement = currentTagsArray.slice(-1);
         var previousTags = [];
         if (currentTagsArray.length > 1) {

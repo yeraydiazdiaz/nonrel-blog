@@ -55,6 +55,7 @@ app.PostListView = Backbone.View.extend({
      */
     render: function(e) {
         if (this.dirty) {
+            $('#loading-icon').remove();
             if (this.collection.length > 0) {
                 this.collection.sort();
                 this.$el.html('<h1>' + this.getHeadingMessage() +'</h1>');
@@ -111,6 +112,7 @@ app.PostListView = Backbone.View.extend({
      */
     loadMorePosts: function() {
         $('#load-more-posts').remove();
+        this.$el.append(this.loadingIconTag);
         var lastDigit = this.collection.next.substring(
             this.collection.next.lastIndexOf('=')+1,
             this.collection.next.length
@@ -133,6 +135,7 @@ app.PostListView = Backbone.View.extend({
      */
     showView: function() {
         if (!this.dirty) {
+            this.$el.hide();
             this.$el.fadeIn();
             this.pendingFade = false;
         }else{
