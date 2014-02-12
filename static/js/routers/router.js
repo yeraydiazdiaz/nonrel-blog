@@ -1,3 +1,6 @@
+/**
+ * Router for Nonrel-blog.
+ */
 
 var app = app || {};
 

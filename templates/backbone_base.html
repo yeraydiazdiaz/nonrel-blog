@@ -167,6 +167,9 @@
             <%= task %> post <%= post_title %>
             <% } %>
         </script>
+        <script id="uniqueTagTemplate" type="text/template">
+            <button id="tag-<%= cid %>" type="button" class="btn btn-default btn-xs tag-suggestion"><%= name %></button>
+        </script>
         <script type="text/javascript" src="/static/js/lib/jquery-1.11.0.js"></script>
         <script type="text/javascript" src="/static/js/lib/underscore.js"></script>
         <script type="text/javascript" src="/static/js/lib/backbone.js"></script>
@@ -176,11 +179,14 @@
         <script type="text/javascript" src="/static/js/collections/blog.js"></script>
         <script type="text/javascript" src="/static/js/models/siteactivity.js"></script>
         <script type="text/javascript" src="/static/js/collections/siteactivities.js"></script>
+        <script type="text/javascript" src="/static/js/models/tag.js"></script>
+        <script type="text/javascript" src="/static/js/collections/uniqueTags.js"></script>
         <script type="text/javascript" src="/static/js/views/postList.js"></script>
         <script type="text/javascript" src="/static/js/views/post.js"></script>
         <script type="text/javascript" src="/static/js/views/createPost.js"></script>
         <script type="text/javascript" src="/static/js/views/blog.js"></script>
         <script type="text/javascript" src="/static/js/views/siteActivity.js"></script>
+        <script type="text/javascript" src="/static/js/views/tagSuggestionView.js"></script>
         <script type="text/javascript" src="/static/js/app.js"></script>
         {% block backbone_init %}{% endblock %}
     </body>

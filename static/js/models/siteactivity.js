@@ -1,3 +1,6 @@
+/**
+ * The SiteActivityModel for the SiteActivityCollection. Mimics the Django model.
+ */
 
 var app = app || {};
 

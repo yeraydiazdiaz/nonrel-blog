@@ -69,3 +69,7 @@
     display: block;
     margin: 10em auto 0 auto;
 }
+
+#tag-suggestions {
+    margin-top: 1em;
+}

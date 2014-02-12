@@ -1,3 +1,6 @@
+/**
+ * Post model for the blog. Mimics the Django model with default values.
+ */
 
 var app = app || {};
 

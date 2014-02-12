@@ -1,3 +1,6 @@
+/**
+ * ActivityView is a simple view to render a single activity.
+ */
 var app = app || {};
 
 app.ActivityView = Backbone.View.extend({
@@ -5,6 +8,10 @@ app.ActivityView = Backbone.View.extend({
     className: 'activity alert alert-dismissable',
     template: _.template($('#activityTemplate').html()),
 
+    /**
+     * Initialize an additional class depending on the type of task the
+     * activity.
+     */
     initialize: function() {
         var additional_class;
         if (this.model.get('task') == 'Deleted') {
@@ -17,15 +24,26 @@ app.ActivityView = Backbone.View.extend({
         this.$el.addClass(additional_class);
     },
 
+    /**
+     * Basic rendering through template.
+     * @returns {app.ActivityView} An instance of this view for render in parent view.
+     */
     render: function() {
         this.$el.html( this.template( this.model.toJSON() ));
         return this;
     }
 });
 
+/**
+ * SiteActivityView is associated with SiteActivities, rendering them as they are generated
+ * and allowing the user to dismiss them.
+ */
 app.SiteActivitiesView = Backbone.View.extend({
     el: '#site-activity',
 
+    /**
+     * Set up handlers for changes on the SiteActivities collection.
+     */
     initialize: function() {
         this.listenTo(app.blogCollection, 'sync', this.refreshView);
         this.listenTo(app.blogCollection, 'add', this.refreshView);
@@ -34,6 +52,10 @@ app.SiteActivitiesView = Backbone.View.extend({
         this.listenTo(this.collection, 'sync', this.render);
     },
 
+    /**
+     * Render each activity sequentially, skipping the already rendered ones.
+     * @returns {app.SiteActivitiesView} An instance of this view.
+     */
     render: function() {
         if (this.collection.length > 0) {
             this.collection.each(function(item) {
@@ -46,6 +68,12 @@ app.SiteActivitiesView = Backbone.View.extend({
         return this;
     },
 
+    /**
+     * Render a single activity, setting up the click handlers on the dismiss buttons.
+     * When clicked we remove the model from the collection and update the timestamp
+     * on the collection to not retrieve it again.
+     * @param item The activity to be rendered.
+     */
     renderActivities: function(item) {
         var activityView = new app.ActivityView({
             model: item
@@ -62,6 +90,10 @@ app.SiteActivitiesView = Backbone.View.extend({
         view.$el.fadeIn();
     },
 
+    /**
+     * Handler for events on the collection. We do not remove models until the
+     * user dismisses them.
+     */
     refreshView: function() {
         this.collection.fetch({remove: false});
     }

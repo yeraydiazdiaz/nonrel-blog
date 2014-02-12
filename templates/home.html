@@ -32,6 +32,7 @@
             }
             // start up the components
             app.blogCollection = new app.BlogCollection();
+            app.uniqueTagsCollection = new app.UniqueTagsCollection();
             app.blogRouter = new Workspace();
             app.blogView = new app.BlogView({collection: app.blogCollection});
             app.siteActivitiesCollection = new app.SiteActivitiesCollection();
