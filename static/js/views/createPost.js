@@ -63,11 +63,60 @@ app.CreateEditPostView = Backbone.View.extend({
     validateField: function(field) {
         var value = field.val();
         if (value != '') {
-            return value;
+            if (field[0].id == 'post-text') {
+                return this.validateText(value);
+            } else {
+                return this.validate(value);
+            }
         } else {
             field.after(this.formErrorTemplate({error_msg: 'This field is required'}));
             return false;
         }
+    },
+
+    /**
+     * Function to validate body of text stripping unallowed tags.
+     * @param text Original text input by the user.
+     * @returns {*} Stripped version of the text.
+     */
+    validateText: function(text) {
+        var allowedTags = ['a', 'b', 'strong', 'i', 'li', 'ul', 'ol'];
+        return this.stripTags(text, allowedTags);
+    },
+
+    /**
+     * Function to validate all other input fields stripping all tags.
+     * @param text Original input by the user.
+     * @returns {*} Stripped version or the string.
+     */
+    validate: function(text) {
+        var allowedTags = [];
+        return this.stripTags(text, allowedTags);
+    },
+
+    /**
+     * Strips tags contained in "allowedTags" from the text.
+     * @param text Original text
+     * @param allowedTags Array of strings representing HTML tags.
+     * @returns {XML|string} Stripped version of the text.
+     */
+    stripTags: function(text, allowedTags) {
+        var fullTagsRegexp = /<(\w+)(?:[^>]*)>([^<]+)<\/[^>]+>/gim;
+        var result = text.replace(fullTagsRegexp, function(match, g1, g2) {
+            if (_.contains(allowedTags, g1)) {
+                return match;
+            }else{
+                return g2;
+            }
+        })
+        var selfClosingTagsRegexp = /<(\w+)(?:[^>]*)\/>/gim;
+        return result.replace(selfClosingTagsRegexp, function(match, g1) {
+            if (_.contains(allowedTags, g1)) {
+                return match;
+            }else{
+                return '';
+            }
+        })
     },
 
     /**

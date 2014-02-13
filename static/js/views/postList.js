@@ -18,6 +18,11 @@ app.PostSnippetView = Backbone.View.extend({
         return this;
     },
 
+    /**
+     * Check for unfinished or unclosed HTML tags.
+     * @param text Original text.
+     * @returns {string} Stripped down version with potentially problematic tags removed.
+     */
     getStrippedText: function(text) {
         var unfinishedTagRegexp = /<([a-zA-Z]+)[^>]+$/g;
         var unclosedTagRegexp = /<([a-zA-Z]+) .+>.+$/g;
