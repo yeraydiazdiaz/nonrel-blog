@@ -62,7 +62,7 @@
                 </div>
             <% } %></p>
             <p>by <strong><a href="#user/<%= user_name %>"><%= user_name %></a></strong> on <small><strong><%= created_on_readable %></strong></small>
-            <p><% print(text.substring(0,250)); %>...</p>
+            <p><%= snippetText %>...</p>
             <p class="right-italic"><% if(comments != null) {print(comments.length);}else{print(0);} %> comments</p>
         </script>
         <script id="postTemplate" type="text/template">

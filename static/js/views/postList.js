@@ -12,8 +12,22 @@ app.PostSnippetView = Backbone.View.extend({
     template: _.template($('#postListTemplate').html()),
 
     render: function() {
-        this.$el.html( this.template( this.model.toJSON() ));
+        var json = this.model.toJSON();
+        json.snippetText = this.getStrippedText(json.text);
+        this.$el.html( this.template( json ));
         return this;
+    },
+
+    getStrippedText: function(text) {
+        var unfinishedTagRegexp = /<([a-zA-Z]+)[^>]+$/g;
+        var unclosedTagRegexp = /<([a-zA-Z]+) .+>.+$/g;
+        var charCount = 255;
+        var strippedText = text.substr(0, charCount);
+        if (unfinishedTagRegexp.test(strippedText) || unclosedTagRegexp.test(strippedText)) {
+            return text.substr(0, strippedText.lastIndexOf('<')-1);
+        } else {
+            return strippedText;
+        }
     }
 });
 
