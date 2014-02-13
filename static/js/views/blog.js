@@ -89,7 +89,7 @@ app.BlogView = Backbone.View.extend({
             post = new app.Post({id: id});
             this.changeCollectionURL('/api/posts');
             this.collection.add(post);
-            post.fetch({success: this.onModelFetchComplete(this, 'View', post), error: this.fetchError});
+            post.fetch({success: this.onModelFetchComplete(this, 'View', post), error: this.fetchError(this)});
         }else{
             this.renderPostView(post);
         }
@@ -131,7 +131,7 @@ app.BlogView = Backbone.View.extend({
         } else {
             var post = new app.Post({id: id});
             this.collection.add(post);
-            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError});
+            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError(this)});
         }
     },
 
@@ -157,8 +157,12 @@ app.BlogView = Backbone.View.extend({
     /**
      * Handler of an error when fetching.
      */
-    fetchError: function() {
-        alert('Fetch error');
+    fetchError: function(view) {
+        return function (model, response, options) {
+            alert('The post you are trying to access is does not exist.');
+//            view.postListView.$el.show();
+            app.blogRouter.navigate('', {trigger: true});
+        }
     },
 
     /**
@@ -229,7 +233,7 @@ app.BlogView = Backbone.View.extend({
     fetchCollection: function() {
         this.collection.fetch({
             success: this.onCollectionFetchComplete(this),
-            error: this.fetchError
+            error: this.fetchError(this)
         });
     },
 

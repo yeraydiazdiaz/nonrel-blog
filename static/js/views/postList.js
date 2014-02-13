@@ -7,7 +7,6 @@
 var app = app || {};
 
 app.PostSnippetView = Backbone.View.extend({
-    tagName: 'div',
     className: 'post-list',
     template: _.template($('#postListTemplate').html()),
 
@@ -42,8 +41,7 @@ app.PostSnippetView = Backbone.View.extend({
  * for events and reacts.
  */
 app.PostListView = Backbone.View.extend({
-    tagName: 'div',
-    loadingIconTag: '<img src="/static/img/loaderb64.gif" id="loading-icon" />',
+    loadingIconTag: '<div id="loading-icon"><img src="/static/img/loaderb64.gif" /></div>',
 
     events: {
         'click #load-more-posts': 'loadMorePosts'
@@ -57,8 +55,8 @@ app.PostListView = Backbone.View.extend({
         this.pendingFade = false;
         this.$el.hide();
         this.listenTo(this.collection, 'sync', this.render);
-        this.listenTo(this.collection, 'add', this.setToDirty);
-        this.listenTo(this.collection, 'destroy', this.setToDirty);
+        this.listenTo(this.collection, 'add', this.setToDirtyAndFetch);
+        this.listenTo(this.collection, 'destroy', this.setToDirtyAndFetch);
         this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:createPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:editPost', this.hideView);
@@ -169,6 +167,11 @@ app.PostListView = Backbone.View.extend({
     setToDirty: function() {
         this.dirty = true;
         this.$el.html(this.loadingIconTag);
+    },
+
+    setToDirtyAndFetch: function() {
+        this.setToDirty();
+        this.collection.fetch();
     }
 
 });

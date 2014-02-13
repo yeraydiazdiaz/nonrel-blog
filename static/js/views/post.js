@@ -164,9 +164,9 @@ app.PostView = Backbone.View.extend({
         this.model.destroy( {
             success: function() {
                 app.blogCollection.fetch();
-                app.blogRouter.navigate('', {trigger: true} );
             }
         });
+        app.blogRouter.navigate('', {trigger: true} );
     },
 
     /**
