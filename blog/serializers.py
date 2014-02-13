@@ -42,13 +42,17 @@ class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, required=False)
     tags = serializers.CharField(source='tags', required=False)
     created_on_readable = serializers.Field(source='created_on')
-    timestamp = serializers.Field(source='created_on')
+    updated_on_readable = serializers.Field(source='updated_on')
+    timestamp = serializers.Field(source='updated_on')
 
     def transform_user_name(self, obj, value):
         from django.contrib.auth.models import User
         return User.objects.get(pk=value).username
 
     def transform_created_on_readable(self, obj, value):
+        return value.strftime('%A %d %b %Y - %H:%M:%S')
+
+    def transform_updated_on_readable(self, obj, value):
         return value.strftime('%A %d %b %Y - %H:%M:%S')
 
     def transform_tags(self, obj, value):
@@ -77,7 +81,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'permalink', 'user_name', 'user_id', 'text', 'tags',
-                  'comments', 'created_on_readable', 'timestamp')
+                  'comments', 'created_on_readable', 'updated_on_readable', 'timestamp', 'sticky')
 
 
 class PostPaginationSerializer(PaginationSerializer):

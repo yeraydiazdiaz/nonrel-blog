@@ -160,7 +160,6 @@ app.BlogView = Backbone.View.extend({
     fetchError: function(view) {
         return function (model, response, options) {
             alert('The post you are trying to access is does not exist.');
-//            view.postListView.$el.show();
             app.blogRouter.navigate('', {trigger: true});
         }
     },
@@ -201,8 +200,12 @@ app.BlogView = Backbone.View.extend({
         var terms = search_terms.trim();
         if (terms != '') {
             this.removeDetailViews();
-            this.changeCollectionURL('/api/posts/search/' + search_terms)
+            this.changeCollectionURL('/api/posts/search/' + search_terms);
+            // stop listening for the routing to avoid a double trigger
+            this.stopListening(app.blogRouter, 'route:search', this.search);
             app.blogRouter.navigate('search/' + search_terms, {trigger: true});
+            // reenable
+            this.listenTo(app.blogRouter, 'route:search', this.search);
         }
     },
 

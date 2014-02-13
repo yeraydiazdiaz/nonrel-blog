@@ -15,7 +15,8 @@ class Post(models.Model):
     tags = ListField(blank=True, null=True)
     comments = ListField(EmbeddedModelField('Comment'), blank=True, null=True)
     created_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
-    updated_on = models.DateTimeField(blank=True, null=True)
+    updated_on = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    sticky = models.BooleanField(default=False)
 
     def create_permalink_from_title(self):
         """

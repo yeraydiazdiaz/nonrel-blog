@@ -20,7 +20,7 @@ class PostGenericList(generics.ListCreateAPIView):
     API view for lists of Posts, responds to /api/posts.
     By default we sort by inverse creation date and we paginate.
     """
-    queryset = Post.objects.all().order_by('-created_on')
+    queryset = Post.objects.all().order_by('-updated_on')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     paginate_by = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
@@ -40,9 +40,12 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     API view for detail on Posts, responds to /api/posts/ID.
     Restricted access on update and delete.
     """
-    queryset = Post.objects.all().order_by('-created_on')
+    queryset = Post.objects.all().order_by('-updated_on')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def pre_save(self, obj):
+        obj.updated_on = timezone.now()
 
     def post_save(self, obj, created=False):
         from blog.api_signals import api_update_signal
@@ -65,7 +68,7 @@ class TagGenericList(generics.ListAPIView):
 
     def get_queryset(self):
         tag = self.kwargs.get(self.lookup_url_kwarg)
-        return Post.objects.filter(tags__in=[tag]).order_by('-created_on')
+        return Post.objects.filter(tags__in=[tag]).order_by('-updated_on')
 
 
 class UserGenericList(generics.ListAPIView):
@@ -83,7 +86,7 @@ class UserGenericList(generics.ListAPIView):
         username = self.kwargs.get(self.lookup_url_kwarg)
         try:
             u = User.objects.get(username=username)
-            return Post.objects.filter(user_id=u.id).order_by('-created_on')
+            return Post.objects.filter(user_id=u.id).order_by('-updated_on')
         except (User.DoesNotExist, User.MultipleObjectsReturned):
             return []
 
@@ -102,7 +105,7 @@ class SearchGenericList(generics.ListAPIView):
         from search.core import search
         search_terms = self.kwargs.get(self.lookup_url_kwarg)
         # force the evaluation of the search RelationIndexQuery result as the pagination doesn't seem to like it
-        return [q for q in search(Post, search_terms).order_by('-created_on')]
+        return [q for q in search(Post, search_terms).order_by('-updated_on')]
 
 
 class CommentsGenericDetail(generics.CreateAPIView):

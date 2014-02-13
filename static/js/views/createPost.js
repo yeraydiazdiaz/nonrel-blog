@@ -155,7 +155,7 @@ app.CreateEditPostView = Backbone.View.extend({
             if (this.model) {
                 // we're previewing the edition of a post, pass as much data from it as possible
                 var jsonModel = this.model.toJSON();
-                data.created_on_readable = jsonModel.created_on_readable;
+                data.updated_on_readable = jsonModel.updated_on_readable;
                 if (!data.hasOwnProperty('tags')) {
                     data.tags = jsonModel.tags;
                 }
@@ -165,7 +165,7 @@ app.CreateEditPostView = Backbone.View.extend({
                 data.id = jsonModel.id;
             }else{
                 data.user_name = $('.dropdown-toggle').html().substring(0, $('.dropdown-toggle').html().indexOf('<')-1);
-                data.created_on_readable = 'just now';
+                data.updated_on_readable = 'just now';
                 data.comments = [];
             }
             data.text = this.replaceNewLinesWithPs(data.text)

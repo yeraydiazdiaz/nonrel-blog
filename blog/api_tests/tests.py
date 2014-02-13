@@ -210,6 +210,31 @@ class BlogAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, 'Expected HTTP 204.')
         self.assertEqual(Post.objects.count(), 0, 'Expected no posts.')
 
+    def test_PATCH_the_title_updates_only_the_title(self):
+        """
+        Test PATCH updates only parts of an existing post and updates its updated_on
+        """
+        import calendar, time
+        reset_db()
+        c = APIClient()
+        u = create_user()
+        p = create_post(user=u)
+        data = {
+            "title": "Test post title edited",
+        }
+        time.sleep(1)
+        c.login(username=u.username, password='foobar')
+        response = c.patch('/api/posts/%s' % p.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        content = json.loads(response.content)
+        self.assertNotEqual(content['title'], data['title'], 'Expected titles to be different, got %s' % data['title'])
+        self.assertNotEqual(content['timestamp'],
+                            int(calendar.timegm(p.updated_on.utctimetuple())),
+                            'Expected different updated_on.')
+        self.assertEqual(content['text'], p.text, 'Expected same text')
+        self.assertEqual(content['tags'], p.tags, 'Expected same tags')
+        self.assertEqual(content['comments'], p.comments, 'Expected same comments')
+
     def test_search_endpoint_returns_no_results_on_empty_db(self):
         """
         Test search endpoint on an empty database.

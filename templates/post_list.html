@@ -1,12 +1,12 @@
 {% for post in posts %}
-	<h2><a href="/post/{{ post.id }}/{{ post.permalink }}">{{ post.title }}</a></h2>
-	<p><small>posted on <strong>{{ post.created_on }}</strong></small>
-	{% include "tag_buttons.html" %}
-	</p>
-	<p>{{ post.text|linebreaks|slice:":250" }}...<br/><br/><a href="/post/{{ post.id }}/{{ post.permalink }}">Read full post</a></p>
-	{% if post.comments %}
-		<p class="right-italic">{{ post.comments|length }} comments</p>
-	{% else %}
-		<p class="right-italic">No comments</p>
-	{% endif %}
+    <h2><a href="/post/{{ post.id }}/{{ post.permalink }}">{{ post.title }}</a></h2>
+    <p><small>posted on <strong>{{ post.updated_on }}</strong></small>
+    {% include "tag_buttons.html" %}
+    </p>
+    <p>{{ post.text|linebreaks|slice:":250" }}...<br/><br/><a href="/post/{{ post.id }}/{{ post.permalink }}">Read full post</a></p>
+    {% if post.comments %}
+        <p class="right-italic">{{ post.comments|length }} comments</p>
+    {% else %}
+        <p class="right-italic">No comments</p>
+    {% endif %}
 {% endfor %}

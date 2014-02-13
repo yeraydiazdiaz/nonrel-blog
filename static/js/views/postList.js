@@ -55,9 +55,9 @@ app.PostListView = Backbone.View.extend({
         this.pendingFade = false;
         this.$el.hide();
         this.listenTo(this.collection, 'sync', this.render);
-        this.listenTo(this.collection, 'add', this.setToDirtyAndFetch);
-        this.listenTo(this.collection, 'destroy', this.setToDirtyAndFetch);
-        this.listenTo(this.collection, 'change', this.setToDirtyAndFetch);
+        this.listenTo(this.collection, 'add', this.setToDirty);
+        this.listenTo(this.collection, 'destroy', this.setToDirty);
+        this.listenTo(this.collection, 'change', this.setToDirty);
         this.listenTo(app.blogRouter, 'route:viewPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:createPost', this.hideView);
         this.listenTo(app.blogRouter, 'route:editPost', this.hideView);
@@ -135,7 +135,7 @@ app.PostListView = Backbone.View.extend({
             this.collection.next.lastIndexOf('=')+1,
             this.collection.next.length
         )
-        this.collection.fetch({remove: false, data: {page: Number(lastDigit)}});
+        this.collection.fetch( {remove: false, data: {page: Number(lastDigit)} } );
     },
 
     /**
@@ -144,6 +144,7 @@ app.PostListView = Backbone.View.extend({
      */
     hideView: function() {
         this.$el.hide();
+        this.setListenToFetch();
     },
 
     /**
@@ -156,6 +157,7 @@ app.PostListView = Backbone.View.extend({
             this.$el.hide();
             this.$el.fadeIn();
             this.pendingFade = false;
+            this.setListenToNotFetch();
         }else{
             this.$el.html(this.loadingIconTag);
             this.pendingFade = true;
@@ -170,9 +172,28 @@ app.PostListView = Backbone.View.extend({
         this.$el.html(this.loadingIconTag);
     },
 
+    /**
+     * Sets the contents to dirty and fetches the current collection.
+     * This is meant to take place in the background while the user is in a DetailView
+     */
     setToDirtyAndFetch: function() {
         this.setToDirty();
         this.collection.fetch();
+    },
+
+    /**
+     * To allow for fetching in the background but keep the fetching to a minimum we
+     * only listen and fetch when the user is in a DetailView. This pair of function change
+     * the listeningTo parameters for the view.
+     */
+    setListenToFetch: function() {
+        this.stopListening(this.collection, 'change', this.setToDirty);
+        this.listenTo(this.collection, 'change', this.setToDirtyAndFetch);
+    },
+
+    setListenToNotFetch: function() {
+        this.stopListening(this.collection, 'change', this.setToDirtyAndFetch);
+        this.listenTo(this.collection, 'change', this.setToDirty);
     }
 
 });

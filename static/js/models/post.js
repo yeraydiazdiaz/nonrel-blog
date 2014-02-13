@@ -13,7 +13,8 @@ app.Post = Backbone.Model.extend({
         comments: [],
         user_name: '',
         user_id: null,
-        created_on_readable: null
+        created_on_readable: null,
+        updated_on_readable: null
     }
 
 });
