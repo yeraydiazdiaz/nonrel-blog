@@ -54,6 +54,21 @@ indexes:
 - kind: blog_post
   properties:
   - name: tags
+  - name: sticky
+  - name: updated_on
+    direction: desc
+
+- kind: blog_post
+  properties:
+  - name: tags
+  - name: sticky
+    direction: desc
+  - name: updated_on
+    direction: desc
+
+- kind: blog_post
+  properties:
+  - name: tags
   - name: updated_on
     direction: desc
 
@@ -81,6 +96,14 @@ indexes:
   properties:
   - name: search_index_search_list_field
   - name: created_on
+    direction: desc
+
+- kind: search_relationindex_blog_post_search_index
+  properties:
+  - name: search_index_search_list_field
+  - name: sticky
+    direction: desc
+  - name: updated_on
     direction: desc
 
 - kind: search_relationindex_blog_post_search_index

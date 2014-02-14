@@ -68,7 +68,7 @@ class TagGenericList(generics.ListAPIView):
 
     def get_queryset(self):
         tag = self.kwargs.get(self.lookup_url_kwarg)
-        return Post.objects.filter(tags__in=[tag]).order_by('sticky', '-updated_on')
+        return Post.objects.filter(tags__in=[tag]).order_by('-sticky', '-updated_on')
 
 
 class UserGenericList(generics.ListAPIView):
