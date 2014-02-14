@@ -12,12 +12,18 @@ app.BlogCollection = Backbone.Collection.extend({
     url: '/api/posts',
     // SortBy comparator function matching the ordering from the back-end.
     comparator: function(a, b) {
-        if (a.get('timestamp') > b.get('timestamp')) {
+        if (a.get('sticky') && !b.get('sticky')) {
             return -1;
-        } else if (a.get('timestamp') < b.get('timestamp')) {
+        } else if (!a.get('sticky') && b.get('sticky')) {
             return 1;
         } else {
-            return 0;
+            if (a.get('timestamp') > b.get('timestamp')) {
+                return -1;
+            } else if (a.get('timestamp') < b.get('timestamp')) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     },
 

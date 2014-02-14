@@ -81,5 +81,7 @@
 }
 
 .sticky {
-    background-color: #F88;
+    background-color: #eaf3f7;
+    border-radius: 6px;
+    padding: 0.2em 3em 0.2em 2em;
 }

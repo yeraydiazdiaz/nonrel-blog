@@ -20,7 +20,7 @@ def home_view(request):
     """
     import serializers
     from rest_framework.renderers import JSONRenderer
-    posts = Post.objects.all().order_by('-updated_on')
+    posts = Post.objects.all().order_by('-sticky', '-updated_on')
     total_posts = posts.count()
     paginator = Paginator(posts, INITIAL_POSTS)
     paged_posts = paginator.page(1)
@@ -204,8 +204,8 @@ def search_view( request ):
     from search.core import search
     search_terms = request.GET.get('q', None)
     if search_terms:
-        total_posts = search( Post, search_terms ).order_by('-updated_on').count()
-        sliced_posts = search( Post, search_terms ).order_by('-updated_on')[:INITIAL_POSTS]
+        total_posts = search( Post, search_terms ).order_by('-sticky', '-updated_on').count()
+        sliced_posts = search( Post, search_terms ).order_by('-sticky', '-updated_on')[:INITIAL_POSTS]
     else:
         total_posts = 0
         sliced_posts = None
@@ -268,11 +268,11 @@ def get_more_posts( GET ):
     if start and total and page and start < total:
         end = start+INITIAL_POSTS if start+INITIAL_POSTS < total else total
         if page == 'home':
-            posts = Post.objects.all().order_by('-updated_on')[start:end]
+            posts = Post.objects.all().order_by('-sticky', '-updated_on')[start:end]
         elif page == 'search':
             from search.core import search
             search_terms = GET['terms']
-            raw_posts = search( Post, search_terms ).order_by('-updated_on')
+            raw_posts = search( Post, search_terms ).order_by('-sticky', '-updated_on')
             posts = [ raw_posts[p] for p in range(start,end) ] # slicing a search result seems to give empty lists?
         elif page == 'tag':
             tag_name = GET['terms']

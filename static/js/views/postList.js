@@ -10,6 +10,19 @@ app.PostSnippetView = Backbone.View.extend({
     className: 'post-list',
     template: _.template($('#postListTemplate').html()),
 
+    /**
+     * On initialization add a sticky style if the post is marked as such.
+     */
+    initialize: function() {
+        if (this.model.get('sticky')) {
+            this.$el.addClass('sticky')
+        }
+    },
+
+    /**
+     * Render the snippet normally but filter the stripped text.
+     * @returns {app.PostSnippetView} Instance of this view for hierarchical rendering.
+     */
     render: function() {
         var json = this.model.toJSON();
         json.snippetText = this.getStrippedText(json.text);
