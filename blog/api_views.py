@@ -170,7 +170,13 @@ def all_tags(request, format=None):
     All-tags endpoint, returns a list of the unique tags in the posts.
     """
     if Post.objects.count():
-        return Response(list(set([t for p in Post.objects.all() for t in p.tags])))
+        unique_tags = []
+        for p in Post.objects.all():
+            if p.tags:
+                for t in p.tags:
+                    unique_tags.append(t)
+
+        return Response(list(set(unique_tags)))
     else:
         return Response('', status=HTTP_204_NO_CONTENT)
 

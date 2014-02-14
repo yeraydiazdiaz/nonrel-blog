@@ -160,6 +160,7 @@ app.BlogView = Backbone.View.extend({
     fetchError: function(view) {
         return function (model, response, options) {
             alert('The post you are trying to access is does not exist.');
+            view.postListView.setToDirtyAndFetch();
             app.blogRouter.navigate('', {trigger: true});
         }
     },
