@@ -53,7 +53,7 @@
         </div>
         <!-- end main div -->
         <script id="postListTemplate" type="text/template">
-            <h2><a href="#post/<%= id %>"><%= title %></a></h2>
+            <h2><a href="#post/<%= permalink %>"><%= title %></a></h2>
             <% if (tags != null && tags.length > 0) { %>
                 <div class="tags">
                 <% _.each(tags, function(tag) { %>
@@ -71,8 +71,8 @@
                  if (skipEditButtons) {}
                } catch(e) {
                     if ( user_id == $('meta[name="user_id"]').attr('content')) { %>
-                        <div class="pull-right">
-                            <a href="#post/<%= id %>/edit" class="btn btn-primary btn-xs">Edit post</a>
+                        <div id="admin-buttons" class="pull-right">
+                            <a href="#post/<%= permalink %>/edit" class="btn btn-primary btn-xs">Edit post</a>
                             <a id="delete-post" class="btn btn-primary btn-xs">Delete post</a>
                         </div>
                <%
@@ -162,7 +162,7 @@
         <script id="activityTemplate" type="text/template">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <% if (task != 'Deleted') { %>
-            <%= task %> post <a href="#post/<%= post_id %>" class="alert-link"><%= post_title %></a>
+            <%= task %> post <a href="#post/<%= post_permalink %>" class="alert-link"><%= post_title %></a>
             <% } else { %>
             <%= task %> post <%= post_title %>
             <% } %>

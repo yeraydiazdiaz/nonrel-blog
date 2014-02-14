@@ -211,7 +211,7 @@ app.CreateEditPostView = Backbone.View.extend({
      * @param options Options.
      */
     onSuccess: function(model, response, options) {
-        app.blogRouter.navigate('post/' + model.id, {trigger: true} );
+        app.blogRouter.navigate('post/' + model.get('permalink'), {trigger: true} );
     },
 
     /**

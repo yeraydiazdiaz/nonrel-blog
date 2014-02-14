@@ -5,6 +5,7 @@
 """
 
 from django.conf import settings
+from django.http import Http404
 from rest_framework import permissions
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -32,7 +33,7 @@ class PostGenericList(generics.ListCreateAPIView):
     def post_save(self, obj, created=False):
         if created:
             from blog.api_signals import api_create_signal
-            api_create_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
+            api_create_signal.send(sender=None, post_id=obj.id, post_title=obj.title, post_permalink=obj.permalink)
 
 
 class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -40,20 +41,31 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
     API view for detail on Posts, responds to /api/posts/ID.
     Restricted access on update and delete.
     """
+    lookup_url_kwarg = 'pk'
     queryset = Post.objects.all().order_by('-sticky', '-updated_on')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_object(self):
+        param = self.kwargs.get(self.lookup_url_kwarg)
+        try:
+            return Post.objects.get(id=int(param))
+        except (ValueError, Post.DoesNotExist):
+            try:
+                return Post.objects.get(permalink=param)
+            except Post.DoesNotExist:
+                raise Http404
 
     def pre_save(self, obj):
         obj.updated_on = timezone.now()
 
     def post_save(self, obj, created=False):
         from blog.api_signals import api_update_signal
-        api_update_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
+        api_update_signal.send(sender=None, post_id=obj.id, post_title=obj.title, post_permalink=obj.permalink)
 
     def post_delete(self, obj):
         from blog.api_signals import api_delete_signal
-        api_delete_signal.send(sender=None, post_id=obj.id, post_title=obj.title)
+        api_delete_signal.send(sender=None, post_id=obj.id, post_title=obj.title, post_permalink=obj.permalink)
 
 
 class TagGenericList(generics.ListAPIView):
@@ -128,9 +140,8 @@ class CommentsGenericDetail(generics.CreateAPIView):
                 post.comments.append(obj)
             post.save()
             from blog.api_signals import api_comment_signal
-            api_comment_signal.send(sender=None, post_id=post.id, post_title=post.title)
+            api_comment_signal.send(sender=None, post_id=post.id, post_title=post.title, post_permalink=post.permalink)
         except Post.DoesNotExist:
-            from django.http import Http404
             raise Http404
 
 

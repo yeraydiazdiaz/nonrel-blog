@@ -104,7 +104,7 @@ app.PostView = Backbone.View.extend({
      */
     submitComment: function() {
         this.$el.find('.alert').remove();
-        this.toggleCommentSubmitButtton();
+        this.toggleButttons($('#comment-submit'));
         data = this.parseCommentForm();
         if (data != false) {
             $.ajaxSetup({
@@ -145,10 +145,16 @@ app.PostView = Backbone.View.extend({
      */
     confirmDelete: function() {
         this.$el.html(this.confirmDeletionTemplate() + this.$el.html());
-        $(".alert").alert()
-        $('#delete-no').click( function() {
-            $(".alert").alert('close');
-        });
+        this.toggleButttons($('#admin-buttons a'));
+        this.toggleButttons($('#comment-submit'));
+        $(".alert").alert();
+        $('#delete-no').click( function(view) {
+            return function() {
+                $(".alert").alert('close');
+                view.toggleButttons($('#admin-buttons a'));
+                view.toggleButttons($('#comment-submit'));
+            };
+        }(this));
         $('#delete-yes').click( function(view) {
             return function() {
                 $(".alert").alert('close');
@@ -172,12 +178,12 @@ app.PostView = Backbone.View.extend({
     /**
      * Adds/removes the disabled attribute on the submit comment button.
      */
-    toggleCommentSubmitButtton: function() {
-        if ($('#comment-submit').attr('disabled') == undefined) {
-            $('#comment-submit').attr('disabled', 'disabled');
+    toggleButttons: function(buttons) {
+        if (buttons.attr('disabled') == undefined) {
+            buttons.attr('disabled', 'disabled');
         } else {
-            $('#comment-submit').removeAttr('disabled');
+            buttons.removeAttr('disabled');
         }
-    },
+    }
 
 });

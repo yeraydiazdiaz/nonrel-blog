@@ -8,6 +8,7 @@ app.SiteActivityModel = Backbone.Model.extend({
     defaults: {
         post_title: '',
         post_id: null,
+        post_permalink: '',
         user_name: '',
         user_id: null,
         created_on_readable: null,

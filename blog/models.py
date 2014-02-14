@@ -21,15 +21,28 @@ class Post(models.Model):
     def create_permalink_from_title(self):
         """
         Create a permalink based on filtering words and whitespaces into underscores.
+        Check if there is already and existing one and append _1 or increase the digit
         """
         import re
         exp = re.compile('\W')
         whitespace = re.compile('\s')
-        temp_title = whitespace.sub("_",self.title)
-        self.permalink = exp.sub('', temp_title)
-    
+        temp_title = whitespace.sub("_", self.title)
+        permalink = exp.sub('', temp_title)
+        same_permalink = Post.objects.filter(permalink=permalink)
+        if same_permalink.count() > 1:
+            same_permalink_posts = Post.objects.filter(permalink__startswith=permalink)
+            last_permalink = same_permalink_posts[same_permalink_posts.count()-1].permalink
+            try:
+                index = int(last_permalink[last_permalink.rfind('_')+1:])
+                return last_permalink[:last_permalink.rfind('_')+1] + str(index+1)
+            except ValueError:
+                last_permalink += '_1'
+                return last_permalink
+        else:
+            return permalink
+
     def save(self, *args, **kwargs):
-        self.create_permalink_from_title() 
+        self.permalink = self.create_permalink_from_title()
         super(Post, self).save(*args, **kwargs)
     
     def __unicode__(self):
@@ -63,6 +76,7 @@ class SiteActivity(models.Model):
     user_id = models.IntegerField(blank=True, null=True)
     post_id = models.IntegerField(blank=True, null=True)
     post_title = models.CharField(max_length=255, blank=True, null=True)
+    post_permalink = models.CharField(max_length=255, blank=True, null=True)
     created_on = models.DateTimeField(default=timezone.now)
 
     TASK_CHOICES = (

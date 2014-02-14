@@ -81,12 +81,12 @@ app.BlogView = Backbone.View.extend({
      * has typed the URL manually which requires fetch from the server.
      * @param id ID of the post to be retrieved from the collection or the server.
      */
-    viewPost: function(id) {
+    viewPost: function(permalink) {
         this.removeDetailViews();
         this.inDetailView = true;
-        var post = this.collection.get(id);
+        var post = this.collection.findWhere({permalink: permalink});
         if (post == undefined) {
-            post = new app.Post({id: id});
+            post = new app.Post({permalink: permalink});
             this.changeCollectionURL('/api/posts');
             this.collection.add(post);
             post.fetch({success: this.onModelFetchComplete(this, 'View', post), error: this.fetchError(this)});
@@ -117,7 +117,7 @@ app.BlogView = Backbone.View.extend({
      * fetch the data from the server.
      * @param id ID of the post to be retrieve from the server if needed.
      */
-    editPost: function(id) {
+    editPost: function(permalink) {
         this.removeDetailViews();
         this.inDetailView = true;
         this.changeCollectionURL('/api/posts')
@@ -125,11 +125,11 @@ app.BlogView = Backbone.View.extend({
             var post = this.postView.model;
             this.createEditPostView = new app.CreateEditPostView({model: post, mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
-        } else if (this.collection.get(id) != undefined) {
-            this.createEditPostView = new app.CreateEditPostView({model: this.collection.get(id), mode: 'Edit'});
+        } else if (this.collection.findWhere({permalink: permalink}) != undefined) {
+            this.createEditPostView = new app.CreateEditPostView({model: this.collection.findWhere({permalink: permalink}), mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
         } else {
-            var post = new app.Post({id: id});
+            var post = new app.Post({permalink: permalink});
             this.collection.add(post);
             post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError(this)});
         }
