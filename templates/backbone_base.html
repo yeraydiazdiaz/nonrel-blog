@@ -147,11 +147,11 @@
             <div class="fieldWrapper form-group">
                 <label for="post-text">Text</label>
                 <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"><%= text %></textarea>
+                <span class="help-block">Accepted tags are <strong>a</strong>, <strong>b</strong>, <strong>strong</strong>, <strong>i</strong>, <strong>em</strong>, <strong>ol</strong>, <strong>ul</strong> and  <strong>li</strong>.</span>
             </div>
             <div class="fieldWrapper form-group">
                 <label for="post-tags">Tags</label>
                 <input id="post-tags" class="form-control input-sm" type="text" name="tags" maxlength="255" placeholder="tag1 tag2 tag3" value="<% print(tags.join(' ')); %>"></input>
-                <span class="help-block"></span>
             </div>
             <p>
                 <button class="btn btn-primary" id="preview-post">Preview</button>

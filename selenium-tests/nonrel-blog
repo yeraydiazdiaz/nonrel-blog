@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>Test Suite</title>
+</head>
+<body>
+<table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
+<tr><td><b>Test Suite</b></td></tr>
+<tr><td><a href="anon-sees-content">Anonymous sees content</a></td></tr>
+<tr><td><a href="anon-home-tag-and-back">Anonymous home to tag view and back</a></td></tr>
+<tr><td><a href="anon-home-post-home">Anonymous can read post and back</a></td></tr>
+<tr><td><a href="anon-logs-in-and-out">Anonymous can log in and out</a></td></tr>
+<tr><td><a href="login-create-read-delete-logout">Login create read delete logout</a></td></tr>
+<tr><td><a href="login-search-tags-create-read-search-tags-delete-logout">Login create home search tag home delete logout</a></td></tr>
+<tr><td><a href="anon-search-tag-and-home">Anonymous search tag and home</a></td></tr>
+<tr><td><a href="anon-user-tag">Anonymous list by user and tag</a></td></tr>
+</tbody></table>
+</body>
+</html>

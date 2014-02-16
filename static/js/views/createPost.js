@@ -80,7 +80,7 @@ app.CreateEditPostView = Backbone.View.extend({
      * @returns {*} Stripped version of the text.
      */
     validateText: function(text) {
-        var allowedTags = ['a', 'b', 'strong', 'i', 'li', 'ul', 'ol'];
+        var allowedTags = ['a', 'b', 'strong', 'i', 'em', 'li', 'ul', 'ol'];
         return this.stripTags(text, allowedTags);
     },
 

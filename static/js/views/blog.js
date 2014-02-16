@@ -73,6 +73,7 @@ app.BlogView = Backbone.View.extend({
         if (this.createEditPostView) {
             this.createEditPostView.remove();
         }
+        this.inDetailView = false;
     },
 
     /**

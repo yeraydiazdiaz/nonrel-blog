@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8000/" />
+<title>Login create home search tag home delete logout</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Login create home search tag home delete logout</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=id_username</td>
+	<td>foo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=id_password</td>
+	<td>bar</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input.btn.btn-primary</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=q</td>
+	<td>django</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=q</td>
+	<td>foo</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=NonRel Blog</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//button[@type='button'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=NonRel Blog</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=foo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=create-new-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=post-title</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=post-text</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=post-tags</td>
+	<td>tag1 tag2</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=preview-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=submit-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=NonRel Blog</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=q</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=NonRel Blog</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=test</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=delete-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=delete-no</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Edit post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=post-text</td>
+	<td>test edited</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=preview-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=submit-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=delete-post</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=delete-yes</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=foo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
