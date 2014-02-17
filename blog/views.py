@@ -6,18 +6,19 @@
 
 from django.core.paginator import Paginator
 from django.conf import settings
-from django.shortcuts import render
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from blog.forms import *
 
 INITIAL_POSTS = settings.REST_FRAMEWORK.get('POST_PAGINATE_BY', 0)
+MESSAGE_TAGS = {messages.ERROR: 'danger'}
 
 
 def home_view(request):
-    """Home view, retrieves the first few posts from the database.
-
+    """
+    Home view, retrieves the first few posts from the database.
     """
     import serializers
     from rest_framework.renderers import JSONRenderer
@@ -36,7 +37,9 @@ def home_view(request):
 
 
 def post_view(request, post_id=None, permalink=None):
-    """Post view, attempts to retrieve the post with the id, raising a 404 if not found.
+    """
+    Post view, attempts to retrieve the post with the id,
+    raising a 404 if not found.
     Also handles the creation of comments.
     Args:
         post_id: Primary key of the post to be shown.
@@ -49,7 +52,7 @@ def post_view(request, post_id=None, permalink=None):
             post = Post.objects.get(permalink=permalink)
         else:
             raise Http404
-    except ObjectDoesNotExist:
+    except Post.DoesNotExist:
         raise Http404
     else:
         if request.method == 'POST':
@@ -57,6 +60,7 @@ def post_view(request, post_id=None, permalink=None):
                      CommentForm(request.POST, error_class=BlogErrorList)]
             forms = add_css_classes(*forms)
             if forms[0].is_valid() and forms[1].is_valid():
+                messages.success(request, 'Comment created successfully.')
                 post = save_comment(post, *forms)
         else:
             forms = add_css_classes(
@@ -65,19 +69,22 @@ def post_view(request, post_id=None, permalink=None):
 
 
 def tag_view(request, tag_name):
-    """Tag view, shows all posts that include the passed tag.
+    """
+    Tag view, shows all posts that include the passed tag.
     Args:
         tag_name: String containing a possible tag.
-    
     """
     total_posts = Post.objects.filter(tags__in=[tag_name]).count()
     posts = Post.objects.filter(tags__in=[tag_name])[:INITIAL_POSTS]
-    return render(request, 'tag.html', {'terms': tag_name, 'posts': posts, 'total_posts': total_posts})
+    return render(request, 'tag.html', {'terms': tag_name,
+                                        'posts': posts,
+                                        'total_posts': total_posts})
 
 
 def login_view(request):
-    """Login view, handles the creation of the form and authentication of users when the form is submitted.
-    
+    """
+    Login view, handles the creation of the form and
+    authentication of users when the form is submitted.
     """
     import django.contrib.auth as auth
     if request.method == 'POST':
@@ -109,8 +116,8 @@ def login_view(request):
 
 
 def logout_view(request):
-    """Logout view.
-    
+    """
+    Logout view.
     """
     from django.contrib.auth import logout
     logout(request)
@@ -118,8 +125,8 @@ def logout_view(request):
 
 
 def register_view(request):
-    """Register view, handles password matching errors and creation of new users.
-    
+    """
+    Register view, handles password matching errors and creation of new users.
     """
     import django.contrib.auth as auth
     if request.method == 'POST':
@@ -139,7 +146,9 @@ def register_view(request):
                 return HttpResponseRedirect(request.REQUEST.get('next', '/'))
             else:
                 login_form = auth.forms.AuthenticationForm(
-                    data={'username': username, 'password': password1}, error_class=BlogErrorList)
+                    data={'username': username,
+                          'password': password1},
+                    error_class=BlogErrorList)
                 return render(request, 'login.html', {'form': add_css_classes(login_form)})
         else:
             return render(request, 'register.html', {'form': add_css_classes(form)})
@@ -150,8 +159,8 @@ def register_view(request):
 
 @login_required
 def create_post_view(request):
-    """Create post view, handles the form and validation of submitted data. 
-
+    """
+    Create post view, handles the form and validation of submitted data.
     """
     if request.method == 'POST':
         form = PostForm(request.POST, error_class=BlogErrorList)
@@ -161,6 +170,7 @@ def create_post_view(request):
                                     tags=request.POST['tags'].split(),
                                     user_id=request.user.id)
             p.save()
+            messages.success(request, 'Post created successfully.')
             return HttpResponseRedirect('/post/%s/%s' % (p.id, p.permalink))
 
         return render(request, 'create_post.html', {'form': add_css_classes(form)})
@@ -170,53 +180,52 @@ def create_post_view(request):
 
 @login_required
 def edit_post_view(request, post_id):
-    """Edit post view, handles submission of forms and renders a result message if the post does not exist.
+    """
+    Edit post view, handles submission of forms
+    and renders a result message if the post does not exist.
     Args:
         post_id: Primary key of the post to be edited.
     """
-    try:
-        p = Post.objects.get(id=post_id)
-        if request.method == 'POST':
-            form = PostForm(request.POST, error_class=BlogErrorList)
-            if form.is_valid():
-                p.title = request.POST['title']
-                p.text = request.POST['text']
-                p.tags = request.POST.get('tags', '').split()
-                p.user_id = request.user.id
-                p.save()
-                return HttpResponseRedirect('/post/%s/%s' % (p.id, p.permalink))
-        else:
-            form = PostForm(initial={
-                'title': p.title,
-                'text': p.text,
-                'tags': ' '.join(p.tags)
-            })
-
-        return render(request, 'edit_post.html', {'form': add_css_classes(form)})
-
-    except ObjectDoesNotExist:
-        return render(request, 'edit_post.html', {'error': True, 'result': 'Post does not exist.'})
+    p = get_object_or_404(Post, pk=post_id)
+    if request.method == 'POST':
+        form = PostForm(request.POST, error_class=BlogErrorList)
+        if form.is_valid():
+            p.title = request.POST['title']
+            p.text = request.POST['text']
+            p.tags = request.POST.get('tags', '').split()
+            p.user_id = request.user.id
+            p.save()
+            messages.success(request, 'Post updated correctly.')
+            return HttpResponseRedirect('/post/%s/%s' % (p.id, p.permalink))
+    else:
+        form = PostForm(initial={
+            'title': p.title,
+            'text': p.text,
+            'tags': ' '.join(p.tags)
+        })
+    return render(request, 'edit_post.html', {'form': add_css_classes(form)})
 
 
 @login_required
 def delete_post_view(request, post_id):
-    """Delete post view, handles deletion of posts displaying a confirmation or error message.
+    """Delete post view, handles deletion of posts displaying a
+    confirmation or error message.
     Args:
         post_id: Primary key of the post to be deleted.
     """
-    try:
-        p = Post.objects.get(id=post_id)
-        if request.user.id == p.user_id:
-            p.delete()
-            return render(request, 'delete_post.html', {'result': 'Post deleted correctly.'})
-        else:
-            return render(request, 'delete_post.html', {'error': True, 'result': 'You are not authorized to delete this post.'})
-    except ObjectDoesNotExist:
-        return render(request, 'delete_post.html', {'error': True, 'result': 'Post does not exists.'})
+    p = get_object_or_404(Post, pk=post_id)
+    if request.user.id == p.user_id:
+        p.delete()
+        messages.success(request, 'Post deleted correctly.')
+        return HttpResponseRedirect('/')
+    else:
+        return render(request, 'delete_post.html', {'error': True,
+                                                    'result': 'You are not authorized to delete this post.'})
 
 
 def search_view(request):
-    """Search view, handles searching on posts based on arbitrary strings. See search_indexes for details.
+    """Search view, handles searching on posts based on arbitrary strings.
+    See search_indexes for details.
 
     """
     from search.core import search
@@ -229,7 +238,9 @@ def search_view(request):
     else:
         total_posts = 0
         sliced_posts = None
-    return render(request, 'search.html', {'posts': sliced_posts, 'total_posts': total_posts, 'terms': search_terms})
+    return render(request, 'search.html', {'posts': sliced_posts,
+                                           'total_posts': total_posts,
+                                           'terms': search_terms})
 
 
 def load_posts_view(request):
@@ -246,12 +257,12 @@ def load_posts_view(request):
     else:
         return HttpResponse('', mimetype='application/json')
 
+
 # Auxiliar functions
-
-
 def add_css_classes(*forms):
-    """Adds custom classes to all widgets in the form. Used to style the forms using bootstrap classes.
-    
+    """
+    Adds custom classes to all widgets in the form.
+    Used to style the forms using bootstrap classes.
     """
     for form in forms:
         try:
@@ -270,8 +281,8 @@ def add_css_classes(*forms):
 
 
 def save_comment(post, author_form, comment_form):
-    """Comment form is valid, update the post with the new comment.
-    
+    """
+    Comment form is valid, update the post with the new comment.
     """
     from blog.api_signals import api_comment_signal
     a = Author.objects.create(name=author_form.cleaned_data[
@@ -289,7 +300,8 @@ def save_comment(post, author_form, comment_form):
 
 
 def get_more_posts(GET):
-    """Function to retrieve additional posts.
+    """
+    Function to retrieve additional posts.
     """
     from django.template import Context, loader
     page = GET.get('page', None)

@@ -31,6 +31,11 @@
                       <li><a href="/create_post" id="create-new-post">Create new post</a></li>
                       <li><a href="/logout">Logout</a></li>
                     </ul>
+                  </li>
+                  <noscript>
+                  <li><a href="/create_post" id="create-new-post">Create new post</a></li>
+                  <li><a href="/logout">Logout</a></li>
+                  </noscript>
                   {% endif %}
               </ul>
             <form class="navbar-form navbar-right" action="/search/" method="get">
@@ -147,7 +152,7 @@
             <div class="fieldWrapper form-group">
                 <label for="post-text">Text</label>
                 <textarea id="post-text" class="form-control input-sm" placeholder="Your post here..." cols="80" name="text" rows="20"><%= text %></textarea>
-                <span class="help-block">Accepted tags are <strong>a</strong>, <strong>b</strong>, <strong>strong</strong>, <strong>i</strong>, <strong>em</strong>, <strong>ol</strong>, <strong>ul</strong> and  <strong>li</strong>.</span>
+                <span class="help-block">Accepted tags are <strong>a</strong>, <strong>b</strong>, <strong>strong</strong>, <strong>i</strong>, <strong>em</strong>, <strong>ol</strong>, <strong>ul</strong> and  <strong>li</strong>. All other tags will be removed.</span>
             </div>
             <div class="fieldWrapper form-group">
                 <label for="post-tags">Tags</label>

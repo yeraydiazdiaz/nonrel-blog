@@ -2,6 +2,7 @@
 {% block title %}Latest posts{% endblock %}
 {% block content %}
 <noscript>
+{% include "messages.html" %}
 <h1>Welcome{% if user.is_authenticated %} {{ user.username }}{% endif %}! Here are the latest posts:</h1>
 {% if posts %}
 <div id="post-list">

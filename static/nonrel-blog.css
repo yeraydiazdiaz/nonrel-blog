@@ -85,3 +85,12 @@
     border-radius: 6px;
     padding: 0.2em 3em 0.2em 2em;
 }
+
+.nav > noscript {
+    float: left;
+}
+
+noscript > li {
+    float: left;
+    padding: 1em;
+}

@@ -57,7 +57,9 @@ class PostForm(forms.ModelForm):
                   'text': 'Content',
                 }
         widgets = {
-                   'title': forms.TextInput( attrs={'id': 'post-title'} ),
+                   'title': forms.TextInput(attrs={'id': 'post-title',
+                                            'placeholder': 'Title of your post'
+                                            }),
                    'text': forms.Textarea( 
                                          attrs={'cols': 80,
                                                 'rows': 20,
