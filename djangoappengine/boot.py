@@ -147,7 +147,11 @@ def setup_project():
     # enable https connections (seem to be broken on Windows because
     # the _ssl module is disallowed).
     if not have_appserver:
-        from google.appengine.tools import dev_appserver
+        # from google.appengine.tools import dev_appserver
+        try:
+            from google.appengine.tools import dev_appserver
+        except ImportError:
+            from google.appengine.tools import old_dev_appserver as dev_appserver
         try:
             # Backup os.environ. It gets overwritten by the
             # dev_appserver, but it's needed by the subprocess module.

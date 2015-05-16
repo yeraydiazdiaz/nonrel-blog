@@ -34,7 +34,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     """
-    Post serializer, adds nested comments and readable date from Datetime object from model declaration.
+    Post serializer, adds nested comments and readable date from Datetime
+    object from model declaration.
     """
     user_id = serializers.Field(source='user_id')
     user_name = serializers.Field(source='user_id')
@@ -80,18 +81,22 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'permalink', 'user_name', 'user_id', 'text', 'tags',
-                  'comments', 'created_on_readable', 'updated_on_readable', 'timestamp', 'sticky')
+        fields = (
+            'id', 'title', 'permalink', 'user_name', 'user_id', 'text',
+            'tags', 'comments', 'created_on_readable', 'updated_on_readable',
+            'timestamp', 'sticky'
+        )
 
 
 class PostPaginationSerializer(PaginationSerializer):
     """
-    Paginated serializer for Post, the pagination parameter is defined in the settings as it's used by the vanilla
-    Django system.
+    Paginated serializer for Post, the pagination parameter is defined in the
+    settings as it's used by the vanilla Django system.
     """
 
     class Meta:
         object_serializer_class = PostSerializer
+
 
 class SiteActivitySerializer(serializers.ModelSerializer):
     """

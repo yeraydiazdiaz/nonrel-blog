@@ -33,7 +33,12 @@ class PostGenericList(generics.ListCreateAPIView):
     def post_save(self, obj, created=False):
         if created:
             from blog.api_signals import api_create_signal
-            api_create_signal.send(sender=None, post_id=obj.id, post_title=obj.title, post_permalink=obj.permalink)
+            api_create_signal.send(
+                sender=None,
+                post_id=obj.id,
+                post_title=obj.title,
+                post_permalink=obj.permalink
+            )
 
 
 class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -61,7 +66,12 @@ class PostGenericDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def post_save(self, obj, created=False):
         from blog.api_signals import api_update_signal
-        api_update_signal.send(sender=None, post_id=obj.id, post_title=obj.title, post_permalink=obj.permalink)
+        api_update_signal.send(
+            sender=None,
+            post_id=obj.id,
+            post_title=obj.title,
+            post_permalink=obj.permalink
+        )
 
     def post_delete(self, obj):
         from blog.api_signals import api_delete_signal

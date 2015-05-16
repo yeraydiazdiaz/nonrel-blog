@@ -87,10 +87,12 @@ app.BlogView = Backbone.View.extend({
         this.inDetailView = true;
         var post = this.collection.findWhere({permalink: permalink});
         if (post == undefined) {
-            post = new app.Post({permalink: permalink});
+            this.collection.add({permalink: permalink});
+            var post = this.collection.models[0];
             this.changeCollectionURL('/api/posts');
-            this.collection.add(post);
-            post.fetch({success: this.onModelFetchComplete(this, 'View', post), error: this.fetchError(this)});
+            post.fetch({url: post.getInitialUrl(),
+                        success: this.onModelFetchComplete(this, 'View', post),
+                        error: this.fetchError(this)});
         }else{
             this.renderPostView(post);
         }
@@ -130,9 +132,11 @@ app.BlogView = Backbone.View.extend({
             this.createEditPostView = new app.CreateEditPostView({model: this.collection.findWhere({permalink: permalink}), mode: 'Edit'});
             this.$el.append(this.createEditPostView.render().el);
         } else {
-            var post = new app.Post({permalink: permalink});
-            this.collection.add(post);
-            post.fetch({complete: this.onModelFetchComplete(this, 'Edit', post), error: this.fetchError(this)});
+            this.collection.add({permalink: permalink});
+            var post = this.collection.models[0];
+            post.fetch({url: post.getInitialUrl(),
+                        complete: this.onModelFetchComplete(this, 'Edit', post),
+                        error: this.fetchError(this)});
         }
     },
 

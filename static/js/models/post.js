@@ -18,12 +18,11 @@ app.Post = Backbone.Model.extend({
         updated_on_readable: null
     },
 
-    urlRoot: function() {
+    getInitialUrl: function() {
         if (this.get('id') == null && this.get('permalink')) {
-            return this.collection.url + '/' + this.get('permalink');
-        } else {
-            return this.collection.url
+            this.url = this.collection.url + '/' + this.get('permalink');
         }
+        return this.url;
     }
 
 });

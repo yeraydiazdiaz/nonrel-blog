@@ -12,16 +12,16 @@ from blog.test_aux import *
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APIClient
 
+
 class BlogAPITests(APITestCase):
 
     def test_posts_returns_empty_on_empty_db(self):
         """
         Test posts endpoint with an empty database.
         """
-        reset_db()
-        c = APIClient()
-        response = c.get('/api/posts')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
+        response = self.client.get('/api/posts')
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK, 'Expected HTTP 200.')
         content = json.loads(response.content)
         self.assertEquals(len(content['results']), 0, 'Expected 0 results')
 

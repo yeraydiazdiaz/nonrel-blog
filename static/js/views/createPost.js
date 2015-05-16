@@ -184,7 +184,9 @@ app.CreateEditPostView = Backbone.View.extend({
         if (data) {
             if (this.model) {
                 // PATCH requests are rejected by the development server but not by the prod server.
-                this.model.save(data, {patch: true, success: this.onSuccess, error: this.onError});
+                this.model.save(data, {patch: true,
+                                       success: this.onSuccess,
+                                       error: this.onError});
             } else {
                 this.collection.create(data, {wait: true, success: this.onSuccess, error: this.onError});
             }
